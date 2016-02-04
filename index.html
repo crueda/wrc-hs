@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Kyros WRC High Speed</title>
+  <meta charset="utf-8">
   <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
   <link href='./img/kyros.png' rel='shortcut icon' type='image/png'> 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
@@ -10,6 +11,7 @@
   <link rel="stylesheet" href="./css/ol3-layerswitcher.css" type="text/css">
   <script src="http://openlayers.org/en/v3.9.0/build/ol.js"></script>
   <script src="./js/ol3-layerswitcher.js" type="text/javascript"></script>
+
   <style>
    #map {
      position: absolute;
@@ -34,45 +36,51 @@
    .tooltip-inner {
      border: 2px solid white;
    }
+
  </style>
 
  <style>
-            .toggle {
-                width: 100px;
-            }
-            .ol-mouse-position {
-                right: 3em;
-                color: #fff;
-                background-color: rgba(0,60,136,.5);
-                padding: 2px 10px;
-                border-radius: 5px;
-            }
+  .toggle {
+    width: 100px;
+  }
+  .ol-mouse-position {
+    right: 3em;
+    color: #fff;
+    background-color: rgba(0,60,136,.5);
+    padding: 2px 10px;
+    border-radius: 5px;
+  }
 
-            .ol-scale-line {
-                left: 175px;
-            }
+  .ol-scale-line {
+    left: 175px;
+  }
 
-            .ol-rotate {
-                top: 3em;
-            }
+  .ol-rotate {
+    top: 3em;
+  }
 
-            .ol-zoomslider {
-                width: 200px;
-                height: 25px;
-                left: 3em;
-                top: 0.5em;
-            }
-            .ol-zoomslider-thumb {
-                height: 16px;
-            }
-        </style>
+  .ol-zoomslider {
+    width: 200px;
+    height: 25px;
+    left: 3em;
+    top: 0.5em;
+  }
+  .ol-zoomslider-thumb {
+    height: 16px;
+  }
+</style>
 
- <script type="text/javascript">    
-   var dict = {};
- </script>
- <script>
-   window.onload = function() { initLayer(); setInterval(reloadLayer,2000)};
- </script>
+<script type="text/javascript">    
+ var dict = {};
+ var car = null;
+ var lon_view = null;
+ var lat_view = null;
+</script>
+
+
+<script>
+ window.onload = function() { initLayer(); setInterval(reloadLayer,2000)};
+</script>
 </head>
 <body>
   <div class="container-fluid">
@@ -85,6 +93,28 @@
 </div>
 </div>
 <script>
+function getGET()
+    {
+        // capturamos la url
+        var loc = document.location.href;
+        // si existe el interrogante
+        if(loc.indexOf('?')>0)
+        {
+            // cogemos la parte de la url que hay despues del interrogante
+            var getString = loc.split('?')[1];
+            // obtenemos un array con cada clave=valor
+            var GET = getString.split('&');
+            var get = {};
+ 
+            // recorremos todo el array de valores
+            for(var i = 0, l = GET.length; i < l; i++){
+                var tmp = GET[i].split('=');
+                get[tmp[0]] = unescape(decodeURI(tmp[1]));
+            }
+            return get;
+        }
+    }
+
  var image = new ol.style.Circle({
    radius: 10,
    fill: new ol.style.Fill({
@@ -139,14 +169,84 @@
    })
  });
 
+ var vectorKmlRallyJueves = new ol.layer.Vector({
+   title: 'Sweden 2016 - Thursday',
+   visible: true,
 
- function add(ident, lon, lat, tracking_state, vehicle_state) {
+   source: new ol.source.Vector({
+     url: './kml/suecia_jueves.kml',
+     format: new ol.format.KML()
+   })
+ });
+
+ var vectorKmlRallyViernes = new ol.layer.Vector({
+   title: 'Sweden 2016 - Friday',
+   visible: true,
+
+   source: new ol.source.Vector({
+     url: './kml/suecia_viernes.kml',
+     format: new ol.format.KML()
+   })
+ });
+
+ var vectorKmlMonteJueves = new ol.layer.Vector({
+   title: 'Montecarlo - Jueves',
+   visible: true,
+   source: new ol.source.Vector({
+     url: './kml/monte_jueves.kml',
+     format: new ol.format.KML()
+   })
+ });
+ var vectorKmlMonteViernes = new ol.layer.Vector({
+   title: 'Montecarlo - Viernes',
+   visible: true,
+   source: new ol.source.Vector({
+     url: './kml/monte_viernes.kml',
+     format: new ol.format.KML()
+   })
+ });
+ var vectorKmlMonteSabado = new ol.layer.Vector({
+   title: 'Montecarlo - Sabado',
+   visible: true,
+   source: new ol.source.Vector({
+     url: './kml/monte_sabado.kml',
+     format: new ol.format.KML()
+   })
+ });
+
+ function check_car(car, new_car, lat, lon) {
+  if (car == new_car) {
+    lat_view = lat;
+    lon_view = lon;
+
+    var new_view = new ol.View({
+        center: ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'),
+        zoom: map.getView().getZoom()
+     });
+
+    //map.setView(new_view);
+    var new_pos = ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857');
+
+    var pan = ol.animation.pan({
+      duration: 1200,
+      source:  (map.getView().getCenter()),
+    });
+    map.beforeRender(pan);
+    //view.setCenter(new_pos);
+    
+
+
+    map.setView(new_view);
+  }
+ }
+
+ function add(ident, alias, lon, lat, tracking_state, vehicle_state) {
    var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326',     
      'EPSG:3857'));
 
    var iconFeature = new ol.Feature({
     geometry: geo_point,
-    name: ident
+    name: alias
   });
 
    if (vehicle_state ==  "VEHICLE_STOPPED") {
@@ -180,35 +280,58 @@
    vectorSource.addFeature(iconFeature);
  }
 
-
-
  function initLayer() {
+  var valores=getGET();
+  if(valores)
+  {
+    // hacemos un bucle para pasar por cada indice del array de valores
+    for(var index in valores)
+    {
+      //alert(valores[index]);
+      car = valores[index];
+    }
+  }
+  
    $.getJSON( "tracking_wrc.json", function( data ) {
      var items = [];
      $.each( data, function( key, val ) {
-       add (val.properties.name,val.geometry.coordinates[0],val.geometry.coordinates[1],val.properties.tracking_state,val.properties.vehicle_state);
-       dict[val.properties.name] = [val.geometry.coordinates[0],val.geometry.coordinates[1]];
+       add (val.properties.license,val.properties.alias,val.geometry.coordinates[0],val.geometry.coordinates[1],val.properties.tracking_state,val.properties.vehicle_state);
+       dict[val.properties.license] = [val.geometry.coordinates[0],val.geometry.coordinates[1]];
+       
+       if (car != null) {
+        check_car(car, val.properties.license,val.geometry.coordinates[1],val.geometry.coordinates[0]);
+        var init_view = new ol.View({
+                center: ol.proj.transform([val.geometry.coordinates[1],val.geometry.coordinates[0]], 'EPSG:4326', 'EPSG:3857'),
+                zoom: 14
+             });
+        map.setView(init_view);
+        }
+
      });                    
    });          
+
  }
 
  function reloadLayer() {
    $.getJSON( "tracking_wrc.json", function( data ) {
      var items = [];
      $.each( data, function( key, val ) {
-       check (val.properties.name,val.geometry.coordinates[0],val.geometry.coordinates[1],val.properties.tracking_state,val.properties.vehicle_state);
+       check (val.properties.license,val.properties.alias,val.geometry.coordinates[0],val.geometry.coordinates[1],val.properties.tracking_state,val.properties.vehicle_state);
+
+       if (car != null)
+        check_car(car, val.properties.license,val.geometry.coordinates[1],val.geometry.coordinates[0]);
      });               
    });
  }
 
- function check(ident,lon,lat,tracking_state,vehicle_state) {                        
+ function check(ident,alias,lon,lat,tracking_state,vehicle_state) {                        
    if (dict[ident][0] != lon) 
-               //if (dict[ident][0] != lon  || dict[ident][1] != lat) 
+    //if (dict[ident][0] != lon  || dict[ident][1] != lat) 
              {
                iFeature = vectorSource.getFeatureById(ident);
                if (iFeature!=null) {
                  vectorSource.removeFeature(iFeature);
-                 add (ident,lon,lat,tracking_state,vehicle_state);
+                 add (ident,alias,lon,lat,tracking_state,vehicle_state);
                }
              }
            }
@@ -264,7 +387,7 @@
 
              new ol.layer.Group({
                'title': 'WRC',
-               layers: [vectorLayer, vectorKmlRally
+               layers: [vectorKmlRally, vectorKmlRallyJueves, vectorKmlRallyViernes, vectorKmlMonteJueves, vectorKmlMonteViernes, vectorKmlMonteSabado, vectorLayer
                ]
              })
 
@@ -284,68 +407,42 @@
            map.addControl(layerSwitcher);
            map.addControl(new ol.control.FullScreen());
 
-            map.addControl(new ol.control.ZoomSlider({
-                maxResolution: 0.5972,
-                minResolution: 39135.76
-            }));
-
-            
-            map.addControl(new ol.control.OverviewMap({
-                    collapsed: true
-                }));
-var scaleLineControl = new ol.control.ScaleLine();
-
-map.addControl(scaleLineControl);
-
-map.addControl(new ol.control.MousePosition({
-                    undefinedHTML: '',
-                    projection: 'EPSG:4326',
-                    coordinateFormat: function(coordinate) {
-                        return ol.coordinate.format(coordinate, '{x}, {y}', 4);
-                    }
-                }));
-
-// Create controls
-/*
-            var controls = [
-                new ol.control.Attribution(),
-                new ol.control.MousePosition({
-                    undefinedHTML: 'outside',
-                    projection: 'EPSG:4326',
-                    coordinateFormat: function(coordinate) {
-                        return ol.coordinate.format(coordinate, '{x}, {y}', 4);
-                    }
-                }),
-                new ol.control.OverviewMap({
-                    collapsed: false
-                }),
-                new ol.control.Rotate({
-                    autoHide: false
-                }),
-                new ol.control.ScaleLine(),
-                new ol.control.Zoom(),
-                new ol.control.ZoomSlider(),
-                new ol.control.ZoomToExtent(),
-                new ol.control.FullScreen()
-            ];
-*/
+           map.addControl(new ol.control.ZoomSlider({
+            maxResolution: 0.5972,
+            minResolution: 39135.76
+          }));
 
 
-                 var info = $('#info');
-                 info.tooltip({
-                   animation: false,
-                   trigger: 'manual'
-                 });
+           map.addControl(new ol.control.OverviewMap({
+            collapsed: true
+          }));
+           var scaleLineControl = new ol.control.ScaleLine();
 
-                 var displayFeatureInfo = function(pixel) {
-                   info.css({
-                     left: pixel[0] + 'px',
-                     top: (pixel[1] - 15) + 'px'
-                   });
-                   var feature = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
-                     return feature;
-                   });
-                   if (feature) {
+           map.addControl(scaleLineControl);
+
+           map.addControl(new ol.control.MousePosition({
+            undefinedHTML: '',
+            projection: 'EPSG:4326',
+            coordinateFormat: function(coordinate) {
+              return ol.coordinate.format(coordinate, '{x}, {y}', 4);
+            }
+          }));
+
+          var info = $('#info');
+            info.tooltip({
+             animation: false,
+             trigger: 'manual'
+           });
+
+            var displayFeatureInfo = function(pixel) {
+             info.css({
+               left: pixel[0] + 'px',
+               top: (pixel[1] - 15) + 'px'
+             });
+             var feature = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+               return feature;
+             });
+             if (feature) {
              //alert(feature.get('name'));
              info.tooltip('hide')
              .attr('data-original-title', feature.get('name'))

@@ -94,7 +94,7 @@ def getTracking():
 
 	cursor = dbKyros4.cursor()
 #	cursor.execute("""SELECT TRACKING_1.VEHICLE_LICENSE as DEV, POS_LATITUDE_DEGREE + POS_LATITUDE_MIN/60 as LAT, POS_LONGITUDE_DEGREE + POS_LONGITUDE_MIN/60 as LON, VEHICLE.START_STATE as STATUS from TRACKING_1 join (VEHICLE, HAS, FLEET) where TRACKING_1.VEHICLE_LICENSE = HAS.VEHICLE_LICENSE and TRACKING_1.VEHICLE_LICENSE = VEHICLE.VEHICLE_LICENSE and HAS.FLEET_ID=FLEET.FLEET_ID and (FLEET.FLEET_ID=489 || FLEET.FLEET_ID=498)""" )
-	cursor.execute("""SELECT TRACKING_1.VEHICLE_LICENSE as DEV, round(POS_LATITUDE_DEGREE,4) + round(POS_LATITUDE_MIN/60,4) as LAT, round(POS_LONGITUDE_DEGREE,4) + round(POS_LONGITUDE_MIN/60,4) as LON, VEHICLE.START_STATE as TRACKING_STATE, VEHICLE_EVENT_1.TYPE_EVENT as VEHICLE_STATE from TRACKING_1 join (VEHICLE, HAS, FLEET, VEHICLE_EVENT_1) where TRACKING_1.VEHICLE_LICENSE = HAS.VEHICLE_LICENSE and TRACKING_1.VEHICLE_LICENSE = VEHICLE.VEHICLE_LICENSE and VEHICLE_EVENT_1.VEHICLE_LICENSE = VEHICLE.VEHICLE_LICENSE and HAS.FLEET_ID=FLEET.FLEET_ID and (FLEET.FLEET_ID=489 || FLEET.FLEET_ID=498) """)
+	cursor.execute("""SELECT VEHICLE.ALIAS as DRIVER, round(POS_LATITUDE_DEGREE,4) + round(POS_LATITUDE_MIN/60,4) as LAT, round(POS_LONGITUDE_DEGREE,4) + round(POS_LONGITUDE_MIN/60,4) as LON, VEHICLE.START_STATE as TRACKING_STATE, VEHICLE_EVENT_1.TYPE_EVENT as VEHICLE_STATE, TRACKING_1.VEHICLE_LICENSE as DEV from TRACKING_1 join (VEHICLE, HAS, FLEET, VEHICLE_EVENT_1) where TRACKING_1.VEHICLE_LICENSE = HAS.VEHICLE_LICENSE and TRACKING_1.VEHICLE_LICENSE = VEHICLE.VEHICLE_LICENSE and VEHICLE_EVENT_1.VEHICLE_LICENSE = VEHICLE.VEHICLE_LICENSE and HAS.FLEET_ID=FLEET.FLEET_ID and (FLEET.FLEET_ID=489 || FLEET.FLEET_ID=498) """)
 	result = cursor.fetchall()
 	
 	try:
@@ -114,7 +114,7 @@ while True:
 	#	print lonRound
 	#	latRound = float("{0:.4f}".format(tracking[1]))
 	#	print latRound
-		position = {"geometry": {"type": "Point", "coordinates": [ tracking[2] , tracking[1] ]}, "type": "Feature", "properties":{"name":str(tracking[0]), "tracking_state":str(tracking[3]), "vehicle_state":str(tracking[4])}}
+		position = {"geometry": {"type": "Point", "coordinates": [ tracking[2] , tracking[1] ]}, "type": "Feature", "properties":{"alias":str(tracking[0]), "tracking_state":str(tracking[3]), "vehicle_state":str(tracking[4]), "license":str(tracking[5])}}
 		array_list.append(position)
 
 	with open('/var/www2/tracking_wrc.json', 'w') as outfile:
