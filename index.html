@@ -189,6 +189,16 @@ function getGET()
    })
  });
 
+ var vectorKmlRallySabado = new ol.layer.Vector({
+   title: 'Sweden 2016 - Saturday',
+   visible: true,
+
+   source: new ol.source.Vector({
+     url: './kml/suecia_sabado.kml',
+     format: new ol.format.KML()
+   })
+ });
+
  var vectorKmlMonteJueves = new ol.layer.Vector({
    title: 'Montecarlo - Jueves',
    visible: true,
@@ -387,7 +397,7 @@ function getGET()
 
              new ol.layer.Group({
                'title': 'WRC',
-               layers: [vectorKmlRally, vectorKmlRallyJueves, vectorKmlRallyViernes, vectorKmlMonteJueves, vectorKmlMonteViernes, vectorKmlMonteSabado, vectorLayer
+               layers: [vectorKmlRally, vectorKmlRallyJueves, vectorKmlRallyViernes, vectorKmlRallySabado, vectorKmlMonteJueves, vectorKmlMonteViernes, vectorKmlMonteSabado, vectorLayer
                ]
              })
 
