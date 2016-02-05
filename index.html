@@ -164,7 +164,7 @@ function getGET()
    visible: true,
 
    source: new ol.source.Vector({
-     url: './kml/rally2.kml',
+     url: './kml/suecia.kml',
      format: new ol.format.KML()
    })
  });
@@ -181,7 +181,7 @@ function getGET()
 
  var vectorKmlRallyViernes = new ol.layer.Vector({
    title: 'Sweden 2016 - Friday',
-   visible: true,
+   visible: false,
 
    source: new ol.source.Vector({
      url: './kml/suecia_viernes.kml',
@@ -191,7 +191,7 @@ function getGET()
 
  var vectorKmlRallySabado = new ol.layer.Vector({
    title: 'Sweden 2016 - Saturday',
-   visible: true,
+   visible: false,
 
    source: new ol.source.Vector({
      url: './kml/suecia_sabado.kml',
@@ -199,9 +199,19 @@ function getGET()
    })
  });
 
+ var vectorKmlRallyDomingo = new ol.layer.Vector({
+   title: 'Sweden 2016 - Sunday',
+   visible: false,
+
+   source: new ol.source.Vector({
+     url: './kml/suecia_domingo.kml',
+     format: new ol.format.KML()
+   })
+ });
+
  var vectorKmlMonteJueves = new ol.layer.Vector({
    title: 'Montecarlo - Jueves',
-   visible: true,
+   visible: false,
    source: new ol.source.Vector({
      url: './kml/monte_jueves.kml',
      format: new ol.format.KML()
@@ -209,7 +219,7 @@ function getGET()
  });
  var vectorKmlMonteViernes = new ol.layer.Vector({
    title: 'Montecarlo - Viernes',
-   visible: true,
+   visible: false,
    source: new ol.source.Vector({
      url: './kml/monte_viernes.kml',
      format: new ol.format.KML()
@@ -217,7 +227,7 @@ function getGET()
  });
  var vectorKmlMonteSabado = new ol.layer.Vector({
    title: 'Montecarlo - Sabado',
-   visible: true,
+   visible: false,
    source: new ol.source.Vector({
      url: './kml/monte_sabado.kml',
      format: new ol.format.KML()
@@ -397,7 +407,7 @@ function getGET()
 
              new ol.layer.Group({
                'title': 'WRC',
-               layers: [vectorKmlRally, vectorKmlRallyJueves, vectorKmlRallyViernes, vectorKmlRallySabado, vectorKmlMonteJueves, vectorKmlMonteViernes, vectorKmlMonteSabado, vectorLayer
+               layers: [vectorKmlRally, vectorKmlRallyJueves, vectorKmlRallyViernes, vectorKmlRallySabado, vectorKmlRallyDomingo, vectorKmlMonteJueves, vectorKmlMonteViernes, vectorKmlMonteSabado, vectorLayer
                ]
              })
 
