@@ -31,6 +31,16 @@
                 url: 'https://dl.dropboxusercontent.com/u/2387761/kml/suecia.kmz',
                 map: map
               });
+            var monteViernesLayer = new google.maps.KmlLayer({
+                url: 'https://dl.dropboxusercontent.com/u/2387761/kml/monte_viernes.kml',
+                map: map
+              });
+            var monteSabadoLayer = new google.maps.KmlLayer({
+                url: 'https://dl.dropboxusercontent.com/u/2387761/kml/monte_sabado.kml',
+                map: map
+              });
+
+
 
             $.getJSON( "../tracking_wrc.json", function( data ) {
                var items = [];
@@ -46,14 +56,6 @@
 
         $(function () {
             initialize();
-
-            google.maps.event.addListener(map, 'click', function (event) {
-                var duration = parseInt(2000);
-                marker.setDuration(duration);
-                marker.setEasing("linear");
-
-                marker.setPosition(event.latLng);
-            });
         });
 
     </script>
@@ -74,13 +76,16 @@
     <script>
     function add(ident, alias, lon, lat, tracking_state, vehicle_state) {
         var myLatlng = new google.maps.LatLng(lat, lon);
+        var image = '../img/OnStage/FiaOnStage' + ident + '.png';
         marker[ident] = new SlidingMarker({
             position: myLatlng,
             map: map,
+            icon: image,
             title: alias
         });
     }
 
+ 
     function reloadLayer() {
         $.getJSON( "../tracking_wrc.json", function( data ) {
             $.each( data, function( key, val ) {
@@ -89,15 +94,20 @@
         });
     }
 
-    function check(ident,alias,lon,lat,tracking_state,vehicle_state) {   
+    function check(ident,alias,lon,lat,tracking_state,vehicle_state) { 
+    if (iden='030') {
+        var a=1;
+    }  
         if (dict[ident][0] != lon) 
         //if (dict[ident][0] != lon  || dict[ident][1] != lat) 
         {
+            //marker[ident].setVisible(false);
+            //add(ident, alias, lon, lat, tracking_state, vehicle_state);
+            
             var myLatlng = new google.maps.LatLng(lat, lon);
-            var duration = parseInt(2000);
+            var duration = parseInt(1000);
             marker[ident].setDuration(duration);
             marker[ident].setEasing("linear");
-
             marker[ident].setPosition(myLatlng);
         }
     }
