@@ -19,7 +19,8 @@
         var marker, map;
 
         function initialize() {
-            var myLatlng = new google.maps.LatLng(60.0277, 13.6968);
+            //var myLatlng = new google.maps.LatLng(60.0277, 13.6968);
+            var myLatlng = new google.maps.LatLng(44.5412, 6.0608);
             var mapOptions = {
                 zoom: 11,
                 center: myLatlng,
@@ -41,7 +42,6 @@
               });
 
 
-
             $.getJSON( "../tracking_wrc.json", function( data ) {
                var items = [];
                $.each( data, function( key, val ) {
@@ -61,7 +61,7 @@
     </script>
 
     <script>
-        window.onload = function() { setInterval(reloadLayer,1000)};
+        window.onload = function() { setInterval(reloadLayer,2000)};
     </script>
 
     <script type="text/javascript">    
@@ -77,12 +77,19 @@
     function add(ident, alias, lon, lat, tracking_state, vehicle_state) {
         var myLatlng = new google.maps.LatLng(lat, lon);
         var image = '../img/OnStage/FiaOnStage' + ident + '.png';
+
+         var icon = new google.maps.MarkerImage(image, new google.maps.Size(30,30), 
+            null, new google.maps.Point(15, 15), 
+            new google.maps.Size(30, 30));
+        
         marker[ident] = new SlidingMarker({
             position: myLatlng,
             map: map,
-            icon: image,
+            icon: icon,
             title: alias
         });
+        
+       
     }
 
  
@@ -100,15 +107,17 @@
     }  
         if (dict[ident][0] != lon) 
         //if (dict[ident][0] != lon  || dict[ident][1] != lat) 
-        {
+        {            
             //marker[ident].setVisible(false);
             //add(ident, alias, lon, lat, tracking_state, vehicle_state);
+
             
             var myLatlng = new google.maps.LatLng(lat, lon);
-            var duration = parseInt(1000);
+            var duration = parseInt(2000);
             marker[ident].setDuration(duration);
             marker[ident].setEasing("linear");
             marker[ident].setPosition(myLatlng);
+            
         }
     }
 
