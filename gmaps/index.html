@@ -3,9 +3,10 @@
 <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
-    <title>Google Maps Sliding Marker Move Demo</title>
+    <title>Kyros WRC High Speed</title>
 
-    <link href="./demo/map.css?1" rel="stylesheet" />
+    <link href="./demo/map.css" rel="stylesheet" />
+    <link href='../img/kyros.png' rel='shortcut icon' type='image/png'> 
 
     <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script src="https://code.jquery.com/jquery.min.js"></script>
@@ -19,10 +20,11 @@
         var marker, map;
 
         function initialize() {
+            var myLatlng = new google.maps.LatLng(59.37, 13.53);
             //var myLatlng = new google.maps.LatLng(60.0277, 13.6968);
-            var myLatlng = new google.maps.LatLng(44.5412, 6.0608);
+            //var myLatlng = new google.maps.LatLng(44.5412, 6.0608);
             var mapOptions = {
-                zoom: 11,
+                zoom: 13,
                 center: myLatlng,
                 mapTypeId: google.maps.MapTypeId.ROADMAP
             }
@@ -32,21 +34,13 @@
                 url: 'https://dl.dropboxusercontent.com/u/2387761/kml/suecia.kmz',
                 map: map
               });
-            var monteViernesLayer = new google.maps.KmlLayer({
-                url: 'https://dl.dropboxusercontent.com/u/2387761/kml/monte_viernes.kml',
-                map: map
-              });
-            var monteSabadoLayer = new google.maps.KmlLayer({
-                url: 'https://dl.dropboxusercontent.com/u/2387761/kml/monte_sabado.kml',
-                map: map
-              });
-
 
             $.getJSON( "../tracking_wrc.json", function( data ) {
                var items = [];
                $.each( data, function( key, val ) {
-                 add (val.properties.license,val.properties.alias,val.geometry.coordinates[0],val.geometry.coordinates[1],val.properties.tracking_state,val.properties.vehicle_state);
+                 add (val.properties.license,val.properties.alias,val.geometry.coordinates[0],val.geometry.coordinates[1],val.properties.tracking_state,val.properties.vehicle_state, val.properties.alarm_state);
                  dict[val.properties.license] = [val.geometry.coordinates[0],val.geometry.coordinates[1]];
+                 dict_state[val.properties.license] = val.properties.vehicle_state;
 
              });                    
            });          
@@ -58,6 +52,40 @@
             initialize();
         });
 
+        function getCarImage(ident, tracking_state, vehicle_state, alarm_state) 
+        {
+            if (alarm_state !=  "0") {
+                return '../img/Panic/FiaPanic'+ident+'.png'
+            }            
+            else if ((vehicle_state ==  "CAR_HOOD_OPEN") || (vehicle_state ==  "CAR_TRUNK_OPEN")) {
+                return '../img/CapoMaletero/FiaCapoMaletero'+ident+'.png'
+            }
+            else if (vehicle_state ==  "YELLOW_FLAG_CONFIRM") {
+                return '../img/YellowFlagConfirm/FiaYellowFlagConfirm'+ident+'.png'
+            }
+            else if (tracking_state ==  "STOP") {
+                return '../img/Stop/FiaStop'+ident+'.png'
+            }
+            else if (vehicle_state ==  "VEHICLE_STOPPED") {
+                return '../img/Stop/FiaStop'+ident+'.png'
+            }            
+            else if (vehicle_state ==  "STAGE_STATUS_STOPONSTAGE") {
+                return '../img/StopOnStage/FiaStopOnStage'+ident+'.png'
+            }            
+            else if (vehicle_state ==  "STAGE_STATUS_OKSTOPONSTAGE") {
+                return '../img/OkAfterStop/FiaStopConfirmated'+ident+'.png'
+            }            
+            else if (vehicle_state ==  "1MIN") {
+                return '../img/Pos1Min/FiaPos1Min'+ident+'.png'
+            }
+            else if (vehicle_state ==  "OLD") {
+                return '../img/ball_grey.png'
+            }
+            else {
+                return '../img/OnStage/FiaOnStage'+ident+'.png'
+            }
+        }
+
     </script>
 
     <script>
@@ -66,35 +94,38 @@
 
     <script type="text/javascript">    
        var dict = {};
+       var dict_state = [];
        var marker = [];
        var car = null;
     </script>
 
 </head>
 <body>
-
-
-
-
     <div id="map_canvas"></div>
-
-
-<div class="pngdiv">
-aaa
-</div>
-<!--img src="../img/monte_plate.jpg"/..>
- </div-->
-
-
-
     <script>
-    function add(ident, alias, lon, lat, tracking_state, vehicle_state) {
+    function add(ident, alias, lon, lat, tracking_state, vehicle_state, alarm_state) {
         var myLatlng = new google.maps.LatLng(lat, lon);
-        var image = '../img/OnStage/FiaOnStage' + ident + '.png';
+        var image_src = getCarImage(ident, tracking_state, vehicle_state, alarm_state); 
 
-         var icon = new google.maps.MarkerImage(image, new google.maps.Size(30,30), 
-            null, new google.maps.Point(15, 15), 
-            new google.maps.Size(30, 30));
+        var image_ancho = 30;
+        var image_alto = 30;
+
+        /*
+        if ((image_src.indexOf('Panic')!=-1) || (image_src.indexOf('CapoMaletero')!=-1) || (image_src.indexOf('YellowFlagConfirm')!=-1)) {
+            image_ancho = 40;
+            image_alato = 40;
+        } else if (image_src == '../img/ball_grey.png') {
+            image_ancho = 16;
+            image_alto = 16;
+        }*/
+        if (image_src == '../img/ball_grey.png') {
+            image_ancho = 16;
+            image_alto = 16;
+        }
+
+        var icon = new google.maps.MarkerImage(image_src, new google.maps.Size(image_ancho,image_alto), 
+            null, new google.maps.Point(image_ancho/2, image_alto/2), 
+            new google.maps.Size(image_ancho, image_alto));
         
         marker[ident] = new SlidingMarker({
             position: myLatlng,
@@ -102,36 +133,44 @@ aaa
             icon: icon,
             title: alias
         });
-        
-       
+        /*
+        marker[ident] = new google.maps.Marker({
+            position: myLatlng,
+            map: map,
+            icon: image_src,
+            title: alias,
+            optimized: false,
+            draggable: false
+        });*/
+
     }
 
  
     function reloadLayer() {
         $.getJSON( "../tracking_wrc.json", function( data ) {
             $.each( data, function( key, val ) {
-                check (val.properties.license,val.properties.alias,val.geometry.coordinates[0],val.geometry.coordinates[1],val.properties.tracking_state,val.properties.vehicle_state);
+                check (val.properties.license,val.properties.alias,val.geometry.coordinates[0],val.geometry.coordinates[1],val.properties.tracking_state,val.properties.vehicle_state, val.properties.alarm_state);
             });               
         });
     }
 
-    function check(ident,alias,lon,lat,tracking_state,vehicle_state) { 
-    if (iden='030') {
-        var a=1;
-    }  
-        if (dict[ident][0] != lon) 
-        //if (dict[ident][0] != lon  || dict[ident][1] != lat) 
+    function check(ident,alias,lon,lat,tracking_state,vehicle_state, alarm_state) { 
+        //if (dict[ident][0] != lon) 
+        if (dict[ident][0] != lon  || dict[ident][1] != lat) 
         {            
-            //marker[ident].setVisible(false);
-            //add(ident, alias, lon, lat, tracking_state, vehicle_state);
+            if (dict_state[ident] != vehicle_state) {
+                dict_state[ident] = vehicle_state;
+                marker[ident].setVisible(false);
+                add(ident, alias, lon, lat, tracking_state, vehicle_state, alarm_state);
+            }
+            else {
+                var myLatlng = new google.maps.LatLng(lat, lon);
+                var duration = parseInt(2000);
+                marker[ident].setDuration(duration);
+                marker[ident].setEasing("linear");
+                marker[ident].setPosition(myLatlng);
+            }
 
-            
-            var myLatlng = new google.maps.LatLng(lat, lon);
-            var duration = parseInt(2000);
-            marker[ident].setDuration(duration);
-            marker[ident].setEasing("linear");
-            marker[ident].setPosition(myLatlng);
-            
         }
     }
 
