@@ -5,6 +5,19 @@
     padding: 0;
     font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
     font-size: 12px;
+    z-index:1;
+}
+
+.pngdiv{
+    background-image: url(../../monte_plate.jpg);
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    height: 208px;
+    width: 274px;
+        <font color='"Red"'>position: absolute;
+        left: 0;
+        bottom: 0;</font>
+    z-index: 2000;
 }
 
 .control {
