@@ -133,6 +133,13 @@
             icon: icon,
             title: alias
         });
+
+        google.maps.event.addListener(marker[ident], 'click', function() {
+            infowindow.setContent(this.content);
+            infowindow.open(map, this);
+          });
+
+        
         /*
         marker[ident] = new google.maps.Marker({
             position: myLatlng,
