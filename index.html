@@ -184,7 +184,7 @@ function getGETcar()
 
  var projection = ol.proj.get('EPSG:3857');
 
- var vectorKmlRally = new ol.layer.Vector({
+ var vectorKmlRallySuecia = new ol.layer.Vector({
    title: 'Sweden 2016',
    visible: true,
 
@@ -194,73 +194,23 @@ function getGETcar()
    })
  });
 
- var vectorKmlRallyJueves = new ol.layer.Vector({
-   title: 'Sweden 2016 - Thursday',
+ var vectorKmlRallyMexico = new ol.layer.Vector({
+   title: 'Mexico 2016',
    visible: true,
 
    source: new ol.source.Vector({
-     url: './kml/suecia_jueves.kml',
+     url: './kml/mexico.kml',
      format: new ol.format.KML()
    })
  });
 
- var vectorKmlRallyViernes = new ol.layer.Vector({
-   title: 'Sweden 2016 - Friday',
-   visible: false,
-
-   source: new ol.source.Vector({
-     url: './kml/suecia_viernes.kml',
-     format: new ol.format.KML()
-   })
- });
-
- var vectorKmlRallySabado = new ol.layer.Vector({
-   title: 'Sweden 2016 - Saturday',
-   visible: false,
-
-   source: new ol.source.Vector({
-     url: './kml/suecia_sabado.kml',
-     format: new ol.format.KML()
-   })
- });
-
- var vectorKmlRallyDomingo = new ol.layer.Vector({
-   title: 'Sweden 2016 - Sunday',
-   visible: false,
-
-   source: new ol.source.Vector({
-     url: './kml/suecia_domingo.kml',
-     format: new ol.format.KML()
-   })
- });
-
- var vectorKmlMonteJueves = new ol.layer.Vector({
-   title: 'Montecarlo - Jueves',
-   visible: true,
-   source: new ol.source.Vector({
-     url: './kml/monte_jueves.kml',
-     format: new ol.format.KML()
-   })
- });
- var vectorKmlMonteViernes = new ol.layer.Vector({
-   title: 'Montecarlo - Viernes',
-   visible: true,
-   source: new ol.source.Vector({
-     url: './kml/monte_viernes.kml',
-     format: new ol.format.KML()
-   })
- });
- var vectorKmlMonteSabado = new ol.layer.Vector({
-   title: 'Montecarlo - Sabado',
-   visible: true,
-   source: new ol.source.Vector({
-     url: './kml/monte_sabado.kml',
-     format: new ol.format.KML()
-   })
- });
 
   function getCarImage(ident, tracking_state, vehicle_state, alarm_state) 
         {
+            if (ident=='020') {
+
+                var i=0;
+            }
             if (alarm_state !=  "0") {
                 return '../img/Panic/FiaPanic'+ident+'.png'
             }
@@ -270,12 +220,17 @@ function getGETcar()
             else if (vehicle_state ==  "YELLOW_FLAG_CONFIRM") {
                 return '../img/YellowFlagConfirm/FiaYellowFlagConfirm'+ident+'.png'
             }
+            /*
             else if (tracking_state ==  "STOP") {
                 return '../img/Stop/FiaStop'+ident+'.png'
             }
             else if (vehicle_state ==  "VEHICLE_STOPPED") {
                 return '../img/Stop/FiaStop'+ident+'.png'
-            }            
+            } 
+            */           
+            else if ((tracking_state ==  "STOP") && (vehicle_state ==  "VEHICLE_STOPPED")) {
+                return '../img/Stop/FiaStop'+ident+'.png'
+            }
             else if (vehicle_state ==  "STAGE_STATUS_STOPONSTAGE") {
                 return '../img/StopOnStage/FiaStopOnStage'+ident+'.png'
             }            
@@ -331,7 +286,7 @@ function getGETcar()
   var image_src = getCarImage(ident, tracking_state, vehicle_state, alarm_state); 
 
   var icon_scale = 1;
-  if ((image_src.indexOf('Panic')!=-1) || (image_src.indexOf('CapoMaletero')!=-1) || (image_src.indexOf('YellowFlagConfirm')!=-1))
+  if ((image_src.indexOf('Panic')!=-1) || (image_src.indexOf('CapoMaletero')!=-1) || (image_src.indexOf('YellowFlagConfirm')!=-1) || (image_src.indexOf('FiaStopOnStage')!=-1) || (image_src.indexOf('FiaStopConfirmated')!=-1))
     icon_scale = 0.8;
 
      var iconStyle = new ol.style.Style({
@@ -395,10 +350,6 @@ function getGETcar()
  }
 
  function check(ident,alias,lon,lat,tracking_state,vehicle_state, alarm_state) {             
- if (ident=='047') 
- {
-  var t=1;
- }           
    //if (dict[ident][0] != lon) 
     if (dict[ident][0] != lon  || dict[ident][1] != lat) 
              {
@@ -463,7 +414,7 @@ function getGETcar()
 
              new ol.layer.Group({
                'title': 'WRC',
-               layers: [vectorKmlRally, vectorKmlRallyJueves, vectorKmlRallyViernes, vectorKmlRallySabado, vectorKmlRallyDomingo, vectorKmlMonteJueves, vectorKmlMonteViernes, vectorKmlMonteSabado, vectorLayer
+               layers: [vectorKmlRallySuecia, vectorKmlRallyMexico, vectorLayer
                ]
              })
 
@@ -472,8 +423,8 @@ function getGETcar()
            target: 'map',
            view: new ol.View({
              //center: ol.proj.transform([13.69, 60.03], 'EPSG:4326', 'EPSG:3857'),
-             center: ol.proj.transform([13.52, 59.37], 'EPSG:4326', 'EPSG:3857'),
-             zoom: 14
+             center: ol.proj.transform([-101.66, 21.11], 'EPSG:4326', 'EPSG:3857'),
+             zoom: 11
            })
          });
 
