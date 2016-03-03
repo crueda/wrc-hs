@@ -88,7 +88,7 @@ function MakeControl(controlDiv, label) {
 }
 
         function initialize() {
-            var myLatlng = new google.maps.LatLng(59.37, 13.53);
+            var myLatlng = new google.maps.LatLng(101.66, 21.11);
             //var myLatlng = new google.maps.LatLng(60.0277, 13.6968);
             //var myLatlng = new google.maps.LatLng(44.5412, 6.0608);
             var mapOptions = {
@@ -99,7 +99,7 @@ function MakeControl(controlDiv, label) {
             }
             map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
 
-  //var controlText = [['TOP_RIGHT', google.maps.ControlPosition.TOP_RIGHT],['RIGHT_TOP', google.maps.ControlPosition.RIGHT_TOP]];
+  /*
   var controlText = [['Sebastien Ogier', google.maps.ControlPosition.RIGHT_TOP]];
 
   for (var i = 0; i < controlText.length; i++) {
@@ -117,11 +117,11 @@ function MakeControl(controlDiv, label) {
     var divName = document.createElement('div');
     var newDiv = new MakeControl0(divName, divLabel);
     map.controls[controlText0[i][1]].push(divName);
-  }
+  }*/
 
 
-            var sueciaLayer = new google.maps.KmlLayer({
-                url: 'https://dl.dropboxusercontent.com/u/2387761/kml/suecia.kmz',
+            var rallyLayer = new google.maps.KmlLayer({
+                url: 'https://dl.dropboxusercontent.com/u/2387761/kml/mexico.kmz',
                 map: map
               });
 
@@ -153,12 +153,17 @@ function MakeControl(controlDiv, label) {
             else if (vehicle_state ==  "YELLOW_FLAG_CONFIRM") {
                 return '../img/YellowFlagConfirm/FiaYellowFlagConfirm'+ident+'.png'
             }
+            /*
             else if (tracking_state ==  "STOP") {
                 return '../img/Stop/FiaStop'+ident+'.png'
             }
             else if (vehicle_state ==  "VEHICLE_STOPPED") {
                 return '../img/Stop/FiaStop'+ident+'.png'
-            }            
+            } 
+            */           
+            else if ((tracking_state ==  "STOP") && (vehicle_state ==  "VEHICLE_STOPPED")) {
+                return '../img/Stop/FiaStop'+ident+'.png'
+            }
             else if (vehicle_state ==  "STAGE_STATUS_STOPONSTAGE") {
                 return '../img/StopOnStage/FiaStopOnStage'+ident+'.png'
             }            
