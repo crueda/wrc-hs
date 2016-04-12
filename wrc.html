@@ -207,35 +207,36 @@
 
        function getCarImage(ident, tracking_state, vehicle_state, alarm_state) 
        {
+                  //return './img/car/Capo.png'
         if (alarm_state !=  "0") {
-          return '../img/Panic/FiaPanic'+ident+'.png'
+          return './img/car/Panic.png'
         }
         else if ((vehicle_state ==  "CAR_HOOD_OPEN") || (vehicle_state ==  "CAR_TRUNK_OPEN")) {
-          return '../img/CapoMaletero/FiaCapoMaletero'+ident+'.png'
+          return './img/car/Capo.png'
         }
         else if (vehicle_state ==  "YELLOW_FLAG_CONFIRM") {
-          return '../img/YellowFlagConfirm/FiaYellowFlagConfirm'+ident+'.png'
+          return './img/car/GreenFlag.png'
         }
         else if (tracking_state ==  "STOP") {
-          return '../img/Stop/FiaStop'+ident+'.png'
+          return './img/car/Stop.png'
         }
         else if (vehicle_state ==  "VEHICLE_STOPPED") {
-          return '../img/Stop/FiaStop'+ident+'.png'
+          return './img/car/Stop.png'
         }            
         else if (vehicle_state ==  "STAGE_STATUS_STOPONSTAGE") {
-          return '../img/StopOnStage/FiaStopOnStage'+ident+'.png'
+          return './img/car/StopStage.png'
         }            
         else if (vehicle_state ==  "STAGE_STATUS_OKSTOPONSTAGE") {
-          return '../img/OkAfterStop/FiaStopConfirmated'+ident+'.png'
+          return './img/car/StopStageOk.png'
         }            
         else if (vehicle_state ==  "1MIN") {
-          return '../img/Pos1Min/FiaPos1Min'+ident+'.png'
+          return './img/car/1Min.png'
         }
         else if (vehicle_state ==  "OLD") {
-          return '../img/ball_grey.png'
+          return './img/car/Grey.png'
         }
         else {
-          return '../img/OnStage/FiaOnStage'+ident+'.png'
+          return './img/car/Stage.png'
         }
       }
 
@@ -283,29 +284,38 @@ function add(ident, alias, lon, lat, speed, heading, tracking_state, vehicle_sta
 
  var image_src = getCarImage(ident, tracking_state, vehicle_state, alarm_state); 
 
+ /*
  var icon_scale = 1;
  if ((image_src.indexOf('Panic')!=-1) || (image_src.indexOf('CapoMaletero')!=-1) || (image_src.indexOf('YellowFlagConfirm')!=-1))
   icon_scale = 0.8;
+ var image_src = './FiaOnStage2.png';
+ icon_scale = 0.8;
+*/
 
-var image_src = './FiaOnStage2.png';
-icon_scale = 0.8;
+  var iconStyle;
 
-var iconStyle = [new ol.style.Style({
+  if (speed<1)
+    heading = 90;
+  if ((image_src.indexOf('Capo')>-1) || (image_src.indexOf('GreenFlag')>-1))
+    heading = 0;
+    
+
+
+ iconStyle = [new ol.style.Style({
   image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-   scale: icon_scale,
+   scale: 1.2,
    rotation: heading * Math.PI / 180,
    src: image_src
  }))
 })
-
 ,
 new ol.style.Style({
   text: new ol.style.Text({
     text: ident,
     fontFamily: 'Calibri,sans-serif',
     fontSize: 26,
-    offsetY: 25,
-    scale: 1.8,
+    offsetY: 28,
+    scale: 1.6,
     fill: new ol.style.Fill({
       color: '#fff'
     }),
@@ -313,11 +323,11 @@ new ol.style.Style({
       color: '#096a1e',
       width: 2.0
     })
-
   })
 })
 ];
 
+//}
 
 iconFeature.setStyle(iconStyle);
 iconFeature.setId(ident);
