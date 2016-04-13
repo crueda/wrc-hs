@@ -72,6 +72,7 @@
 
 <script type="text/javascript">    
  var dict = {};
+ var car_status = {};
  var car = null;
  var lon_view = null;
  var lat_view = null;
@@ -93,51 +94,47 @@
 </div>
 </div>
 <script>
-  function getGET()
-  {
-        // capturamos la url
-        var loc = document.location.href;
-        // si existe el interrogante
-        if(loc.indexOf('?')>0)
-        {
-            // cogemos la parte de la url que hay despues del interrogante
-            var getString = loc.split('?')[1];
-            // obtenemos un array con cada clave=valor
-            var GET = getString.split('&');
-            var get = {};
+  function getGET() {
+    // capturamos la url
+    var loc = document.location.href;
+    // si existe el interrogante
+    if(loc.indexOf('?')>0) {
+      // cogemos la parte de la url que hay despues del interrogante
+      var getString = loc.split('?')[1];
+      // obtenemos un array con cada clave=valor
+      var GET = getString.split('&');
+      var get = {};
 
-            // recorremos todo el array de valores
-            for(var i = 0, l = GET.length; i < l; i++){
-              var tmp = GET[i].split('=');
-              get[tmp[0]] = unescape(decodeURI(tmp[1]));
-            }
-            return get;
-          }
+      // recorremos todo el array de valores
+      for(var i = 0, l = GET.length; i < l; i++){
+        var tmp = GET[i].split('=');
+        get[tmp[0]] = unescape(decodeURI(tmp[1]));
+      }
+      return get;
+    }
+  }
+
+  function getGETcar() {
+    // capturamos la url
+    var loc = document.location.href;
+    // si existe el interrogante
+    if(loc.indexOf('?')>0) {
+      // cogemos la parte de la url que hay despues del interrogante
+      var getString = loc.split('?')[1];
+      // obtenemos un array con cada clave=valor
+      var GET = getString.split('&');
+      var get = {};
+
+      // recorremos todo el array de valores
+      for(var i = 0, l = GET.length; i < l; i++){
+        var tmp = GET[i].split('=');
+        get[tmp[0]] = unescape(decodeURI(tmp[1]));
+        if (unescape(decodeURI(tmp[0])) == 'car')
+          return unescape(decodeURI(tmp[1]));
         }
-
-        function getGETcar()
-        {
-        // capturamos la url
-        var loc = document.location.href;
-        // si existe el interrogante
-        if(loc.indexOf('?')>0)
-        {
-            // cogemos la parte de la url que hay despues del interrogante
-            var getString = loc.split('?')[1];
-            // obtenemos un array con cada clave=valor
-            var GET = getString.split('&');
-            var get = {};
-
-            // recorremos todo el array de valores
-            for(var i = 0, l = GET.length; i < l; i++){
-              var tmp = GET[i].split('=');
-              get[tmp[0]] = unescape(decodeURI(tmp[1]));
-              if (unescape(decodeURI(tmp[0])) == 'car')
-                return unescape(decodeURI(tmp[1]));
-            }
-            return null;
-          }
-        }
+    return null;
+    }
+  }
 
 
         var image = new ol.style.Circle({
@@ -170,22 +167,67 @@
          return styles[feature.getGeometry().getType()];
        };
 
-       var allFeatures = [];
 
        var vectorSource = new ol.source.Vector({
-         features: allFeatures
+         features: []
+       });
+       var vectorLayer = new ol.layer.Vector({
+         title: 'All WRC & WRC2',
+         style: styles,
+         visible: false,
+         source: vectorSource
        });
 
-       var vectorLayer = new ol.layer.Vector({
-         title: 'Tracking WRC & WRC2',
+
+       var vectorSourceStop = new ol.source.Vector({
+         features: []
+       });
+       var vectorLayerStop = new ol.layer.Vector({
+         title: 'Stop',
          style: styles,
-         source: vectorSource
+         source: vectorSourceStop
+       });
+
+       var vectorSourceStopStage = new ol.source.Vector({
+         features: []
+       });
+       var vectorLayerStopStage = new ol.layer.Vector({
+         title: 'Stop on stage',
+         style: styles,
+         source: vectorSourceStopStage
+       });
+
+       var vectorSourceStopStageOk = new ol.source.Vector({
+         features: []
+       });
+       var vectorLayerStopStageOk = new ol.layer.Vector({
+         title: 'Stop on stage confirmated',
+         style: styles,
+         source: vectorSourceStopStageOk
+       });
+
+       var vectorSourcePanic = new ol.source.Vector({
+         features: []
+       });
+       var vectorLayerPanic = new ol.layer.Vector({
+         title: 'Panic',
+         style: styles,
+         source: vectorSourcePanic
+       });
+
+       var vectorSourceNormal = new ol.source.Vector({
+         features: []
+       });
+       var vectorLayerNormal = new ol.layer.Vector({
+         title: 'Normal',
+         style: styles,
+         source: vectorSourceNormal
        });
 
        var projection = ol.proj.get('EPSG:3857');
 
        var vectorKmlRallyMexico = new ol.layer.Vector({
-         title: 'Mexico 2016',
+         title: 'WRC Mexico 2016',
          visible: true,
 
          source: new ol.source.Vector({
@@ -207,15 +249,15 @@
        function getBocadilloImage(ident, tracking_state, vehicle_state, alarm_state) 
        {
                  // return './img/bocadillo/White.png'
-        if (alarm_state !=  "0") {
-          return './img/bocadillo/Panic.png'
-        }
-        else if ((vehicle_state ==  "CAR_HOOD_OPEN") || (vehicle_state ==  "CAR_TRUNK_OPEN")) {
-          return './img/bocadillo/White.png'
-        }
-        else if (vehicle_state ==  "YELLOW_FLAG_CONFIRM") {
-          return './img/bocadillo/White.png'
-        }
+                 if (alarm_state !=  "0") {
+                  return './img/bocadillo/Panic.png'
+                }
+                else if ((vehicle_state ==  "CAR_HOOD_OPEN") || (vehicle_state ==  "CAR_TRUNK_OPEN")) {
+                  return './img/bocadillo/White.png'
+                }
+                else if (vehicle_state ==  "YELLOW_FLAG_CONFIRM") {
+                  return './img/bocadillo/White.png'
+                }
         /*
         else if (tracking_state ==  "STOP") {
           return './img/bocadillo/Stop.png'
@@ -223,6 +265,9 @@
         else if (vehicle_state ==  "VEHICLE_STOPPED") {
           return './img/bocadillo/Stop.png'
         } */           
+        else if ((tracking_state ==  "STOP") && (vehicle_state ==  "VEHICLE_STOPPED")) {
+          return './img/bocadillo/Stop.png'
+        }
         else if (vehicle_state ==  "STAGE_STATUS_STOPONSTAGE") {
           return './img/bocadillo/StopStage.png'
         }            
@@ -240,18 +285,23 @@
         }
       }
 
-       function getCarImage(ident, tracking_state, vehicle_state, alarm_state) 
-       {
+      function getCarImage(ident, tracking_state, vehicle_state, alarm_state) 
+      {
+        if (ident=='001') {
+
+          var i=0;
+        }
+
                   //return './img/car/Capo.png'
-        if (alarm_state !=  "0") {
-          return './img/car/Panic.png'
-        }
-        else if ((vehicle_state ==  "CAR_HOOD_OPEN") || (vehicle_state ==  "CAR_TRUNK_OPEN")) {
-          return './img/car/Capo.png'
-        }
-        else if (vehicle_state ==  "YELLOW_FLAG_CONFIRM") {
-          return './img/car/GreenFlag.png'
-        }
+                  if (alarm_state !=  "0") {
+                    return './img/car/Panic.png'
+                  }
+                  else if ((vehicle_state ==  "CAR_HOOD_OPEN") || (vehicle_state ==  "CAR_TRUNK_OPEN")) {
+                    return './img/car/Capo.png'
+                  }
+                  else if (vehicle_state ==  "YELLOW_FLAG_CONFIRM") {
+                    return './img/car/GreenFlag.png'
+                  }
         /*
         else if (tracking_state ==  "STOP") {
           return './img/car/Stop.png'
@@ -259,6 +309,9 @@
         else if (vehicle_state ==  "VEHICLE_STOPPED") {
           return './img/car/Stop.png'
         } */           
+        else if ((tracking_state ==  "STOP") && (vehicle_state ==  "VEHICLE_STOPPED")) {
+          return './img/car/Stop.png'
+        }
         else if (vehicle_state ==  "STAGE_STATUS_STOPONSTAGE") {
           return './img/car/StopStage.png'
         }            
@@ -295,31 +348,31 @@
           map.beforeRender(pan);
           map.setView(new_view);
         }
-    }
+      }
 
 
 
 
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+      function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
 
-function getRandomArbitrary(min, max) {
-  return Math.random() * (max - min) + min;
-}
+      function getRandomArbitrary(min, max) {
+        return Math.random() * (max - min) + min;
+      }
 
-function add(ident, alias, lon, lat, speed, heading, tracking_state, vehicle_state, alarm_state) {
- var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326',     
-   'EPSG:3857'));
+      function add(ident, alias, lon, lat, speed, heading, tracking_state, vehicle_state, alarm_state) {
+       var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326',     
+         'EPSG:3857'));
 
- var iconFeature = new ol.Feature({
-  geometry: geo_point,
-  name: alias
+       var iconFeature = new ol.Feature({
+        geometry: geo_point,
+        name: alias
   //name: alias + "\n" + speed
 });
 
- var image_src = getCarImage(ident, tracking_state, vehicle_state, alarm_state); 
- var image_bocadillo_src = getBocadilloImage(ident, tracking_state, vehicle_state, alarm_state); 
+       var image_src = getCarImage(ident, tracking_state, vehicle_state, alarm_state); 
+       var image_bocadillo_src = getBocadilloImage(ident, tracking_state, vehicle_state, alarm_state); 
 
  /*
  var icon_scale = 1;
@@ -327,36 +380,34 @@ function add(ident, alias, lon, lat, speed, heading, tracking_state, vehicle_sta
   icon_scale = 0.8;
  var image_src = './FiaOnStage2.png';
  icon_scale = 0.8;
-*/
+ */
 
-  var iconStyle;
+ var iconStyle;
 
   //if (speed<1)
   //  heading = 90;
   if ((image_src.indexOf('Capo')>-1) || (image_src.indexOf('GreenFlag')>-1))
     heading = 0;
-    
 
-
- iconStyle = [new ol.style.Style({
-  image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-   scale: 1.1,
-   rotation: heading * Math.PI / 180,
-   src: image_src
- }))
-})
-,
-new ol.style.Style({
-  image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-   scale: 0.6,
-   offset: [0, 5],
-   src: image_bocadillo_src
- }))
-}),
-new ol.style.Style({
-  text: new ol.style.Text({
-    text: ident,
-    fontFamily: 'Calibri,sans-serif',
+  iconStyle = [new ol.style.Style({
+    image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+     scale: 1.1,
+     rotation: heading * Math.PI / 180,
+     src: image_src
+   }))
+  })
+  ,
+  new ol.style.Style({
+    image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+     scale: 0.6,
+     offset: [0, 5],
+     src: image_bocadillo_src
+   }))
+  }),
+  new ol.style.Style({
+    text: new ol.style.Text({
+      text: ident,
+      fontFamily: 'Calibri,sans-serif',
     //fontSize: 26,
     //offsetY: 28,
     offsetY: 45,
@@ -367,18 +418,41 @@ new ol.style.Style({
     stroke: new ol.style.Stroke({
       //color: '#096a1e',
       color: '#000',
-      width: 2.2
+      width: 3.5
     })
   })
-})
-];
+  })
+  ];
 
 //}
 
 iconFeature.setStyle(iconStyle);
 iconFeature.setId(ident);
 
-vectorSource.addFeature(iconFeature);
+vectorSource.addFeature(iconFeature); 
+
+if (image_bocadillo_src.indexOf('StopStageOk')!=-1) 
+{
+  car_status[ident] = "StopStageOk";
+  vectorSourceStopStageOk.addFeature(iconFeature); 
+}
+else if (image_bocadillo_src.indexOf('StopStage')!=-1) {
+  car_status[ident] = "StopStage";
+  vectorSourceStopStage.addFeature(iconFeature); 
+}
+else if (image_bocadillo_src.indexOf('Stop')!=-1) {
+  car_status[ident] = "Stop";
+  vectorSourceStop.addFeature(iconFeature); 
+}
+else if (image_bocadillo_src.indexOf('Panic')!=-1) {
+  car_status[ident] = "Panic";
+  vectorSourcePanic.addFeature(iconFeature); 
+}
+else{
+  car_status[ident] = "Normal";
+  vectorSourceNormal.addFeature(iconFeature); 
+}
+
 }
 
 function initLayer() {
@@ -396,7 +470,7 @@ function initLayer() {
   
   car = getGETcar();
 
-  $.getJSON( "tracking_wrc.json", function( data ) {
+  $.getJSON( "./tracking_wrc.json", function( data ) {
    var items = [];
    $.each( data, function( key, val ) {
      add (val.properties.license,val.properties.alias,val.geometry.coordinates[0],val.geometry.coordinates[1],val.properties.speed,val.properties.heading,val.properties.tracking_state,val.properties.vehicle_state, val.properties.alarm_state);
@@ -417,7 +491,7 @@ function initLayer() {
 }
 
 function reloadLayer() {
- $.getJSON( "tracking_wrc.json", function( data ) {
+ $.getJSON( "./tracking_wrc.json", function( data ) {
    var items = [];
    $.each( data, function( key, val ) {
      check (val.properties.license,val.properties.alias,val.geometry.coordinates[0],val.geometry.coordinates[1],val.properties.speed,val.properties.heading,val.properties.tracking_state,val.properties.vehicle_state, val.properties.alarm_state);
@@ -429,18 +503,52 @@ function reloadLayer() {
 }
 
 function check(ident,alias,lon,lat,speed,heading,tracking_state,vehicle_state, alarm_state) {             
- if (ident=='047') 
+ if (ident=='001') 
  {
   var t=1;
-  }           
+}           
    //TODO: lo quito para que siempre salgan los coches ordenados ?
    //if (dict[ident][0] != lon  || dict[ident][1] != lat) 
    //{
-     iFeature = vectorSource.getFeatureById(ident);
-     if (iFeature!=null) {
-       vectorSource.removeFeature(iFeature);
-       add (ident,alias,lon,lat,speed,heading,tracking_state,vehicle_state, alarm_state);
-     }
+    if (car_status[ident] = "StopStageOk") {
+      iFeature = vectorSourceStopStageOk.getFeatureById(ident);
+      if (iFeature!=null) {
+        vectorSourceStopStageOk.removeFeature(iFeature);
+      }
+    }
+    else if (car_status[ident] = "StopStage") {
+      iFeature = vectorSourceStopStage.getFeatureById(ident);
+      if (iFeature!=null) {
+        vectorSourceStopStage.removeFeature(iFeature);
+      }        
+    }
+    else if (car_status[ident] = "Stop") {
+      iFeature = vectorSourceStop.getFeatureById(ident);
+      if (iFeature!=null) {
+        vectorSourceStop.removeFeature(iFeature);
+      }
+    }
+    else if (car_status[ident] = "Panic") {
+      iFeature = vectorSourcePanic.getFeatureById(ident);
+      if (iFeature!=null) {
+        vectorSourcePanic.removeFeature(iFeature);
+      }        
+    }
+    else if (car_status[ident] = "Normal") {
+      iFeature = vectorSourceNormal.getFeatureById(ident);
+      if (iFeature!=null) {
+        vectorSourceNormal.removeFeature(iFeature);
+      }        
+    }
+
+    iFeature = vectorSource.getFeatureById(ident);
+    if (iFeature!=null) {
+     vectorSource.removeFeature(iFeature);
+   }
+
+   add (ident,alias,lon,lat,speed,heading,tracking_state,vehicle_state, alarm_state);
+
+
    //}
 
 
@@ -497,20 +605,27 @@ function check(ident,alias,lon,lat,speed,heading,tracking_state,vehicle_state, a
 
    new ol.layer.Group({
      'title': 'WRC',
-     layers: [vectorKmlRally, vectorKmlRallyMexico, vectorLayer
-     ]
-   })
+     layers: [vectorKmlRallyMexico, vectorKmlRally]
+   }),
+
+
+
+   new ol.layer.Group({
+    'title': 'Car status',
+    layers: [vectorLayerNormal,vectorLayerStop,vectorLayerStopStage,vectorLayerStopStageOk, vectorLayerPanic, vectorLayer]
+  })
+
 
    ],
-           target: 'map',
-           view: new ol.View({
+   target: 'map',
+   view: new ol.View({
              //center: ol.proj.transform([-101.6579, 21.1119], 'EPSG:4326', 'EPSG:3857'),
              //zoom: 14
              center: ol.proj.transform([-101.66, 21.11], 'EPSG:4326', 'EPSG:3857'),
              zoom: 11
 
            })
-         });
+ });
 
 
  var layerSwitcher = new ol.control.LayerSwitcher({
