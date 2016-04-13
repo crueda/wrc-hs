@@ -72,7 +72,6 @@
 
 <script type="text/javascript">    
  var dict = {};
- var car_status = {};
  var car = null;
  var lon_view = null;
  var lat_view = null;
@@ -81,9 +80,16 @@
 
 <script>
  window.onload = function() { initLayer(); setInterval(reloadLayer,1000); };
+
+ $(document).ready(function() {
+  $.ajaxSetup({ cache: false });
+});
+
 </script>
 </head>
 <body>
+
+
   <div class="container-fluid">
    <div class="row-fluid">
     <div class="span12">
@@ -137,43 +143,11 @@
   }
 
 
-        var image = new ol.style.Circle({
-         radius: 10,
-         fill: new ol.style.Fill({
-           color: 'rgba(255,0,0,0.2)'
-         }),
-         stroke: new ol.style.Stroke({color: 'red', width: 0})
-       });
-
-        var styles = {
-         'Point': [new ol.style.Style({
-           image: image
-         })],
-         'MultiPoint': [new ol.style.Style({
-           image: image
-         })],        
-         'Circle': [new ol.style.Style({
-           stroke: new ol.style.Stroke({
-             color: 'red',
-             width: 2
-           }),
-           fill: new ol.style.Fill({
-             color: 'rgba(255,0,0,0.2)'
-           })
-         })]
-       };
-
-       var styleFunction = function(feature, resolution) {
-         return styles[feature.getGeometry().getType()];
-       };
-
-
        var vectorSource = new ol.source.Vector({
          features: []
        });
        var vectorLayer = new ol.layer.Vector({
          title: 'All WRC & WRC2',
-         style: styles,
          visible: false,
          source: vectorSource
        });
@@ -184,7 +158,6 @@
        });
        var vectorLayerStop = new ol.layer.Vector({
          title: 'Stop',
-         style: styles,
          source: vectorSourceStop
        });
 
@@ -193,7 +166,6 @@
        });
        var vectorLayerStopStage = new ol.layer.Vector({
          title: 'Stop on stage',
-         style: styles,
          source: vectorSourceStopStage
        });
 
@@ -202,7 +174,6 @@
        });
        var vectorLayerStopStageOk = new ol.layer.Vector({
          title: 'Stop on stage confirmated',
-         style: styles,
          source: vectorSourceStopStageOk
        });
 
@@ -211,7 +182,6 @@
        });
        var vectorLayerPanic = new ol.layer.Vector({
          title: 'Panic',
-         style: styles,
          source: vectorSourcePanic
        });
 
@@ -220,7 +190,6 @@
        });
        var vectorLayerNormal = new ol.layer.Vector({
          title: 'Normal',
-         style: styles,
          source: vectorSourceNormal
        });
 
@@ -246,152 +215,133 @@
          })
        });
 
-       function getBocadilloImage(ident, tracking_state, vehicle_state, alarm_state) 
-       {
-                 // return './img/bocadillo/White.png'
-                 if (alarm_state !=  "0") {
-                  return './img/bocadillo/Panic.png'
-                }
-                else if ((vehicle_state ==  "CAR_HOOD_OPEN") || (vehicle_state ==  "CAR_TRUNK_OPEN")) {
-                  return './img/bocadillo/White.png'
-                }
-                else if (vehicle_state ==  "YELLOW_FLAG_CONFIRM") {
-                  return './img/bocadillo/White.png'
-                }
-        /*
-        else if (tracking_state ==  "STOP") {
-          return './img/bocadillo/Stop.png'
-        }
-        else if (vehicle_state ==  "VEHICLE_STOPPED") {
-          return './img/bocadillo/Stop.png'
-        } */           
-        else if ((tracking_state ==  "STOP") && (vehicle_state ==  "VEHICLE_STOPPED")) {
-          return './img/bocadillo/Stop.png'
-        }
-        else if (vehicle_state ==  "STAGE_STATUS_STOPONSTAGE") {
-          return './img/bocadillo/StopStage.png'
-        }            
-        else if (vehicle_state ==  "STAGE_STATUS_OKSTOPONSTAGE") {
-          return './img/bocadillo/StopStageOk.png'
-        }            
-        else if (vehicle_state ==  "1MIN") {
-          return './img/bocadillo/1Min.png'
-        }
-        else if (vehicle_state ==  "OLD") {
-          return './img/bocadillo/Grey.png'
-        }
-        else {
-          return './img/bocadillo/Stage.png'
-        }
+    function getBocadilloImage(ident, tracking_state, vehicle_state, alarm_state) 
+    {
+      // return './img/bocadillo/White.png'
+      if (alarm_state !=  "0") {
+        return './img/bocadillo/Panic.png'
       }
+      else if ((vehicle_state ==  "CAR_HOOD_OPEN") || (vehicle_state ==  "CAR_TRUNK_OPEN")) {
+        return './img/bocadillo/White.png'
+      }
+      else if (vehicle_state ==  "YELLOW_FLAG_CONFIRM") {
+        return './img/bocadillo/White.png'
+      }
+      else if ((tracking_state ==  "STOP") && (vehicle_state ==  "VEHICLE_STOPPED")) {
+        return './img/bocadillo/Stop.png'
+      }
+      else if (vehicle_state ==  "STAGE_STATUS_STOPONSTAGE") {
+        return './img/bocadillo/StopStage.png'
+      }            
+      else if (vehicle_state ==  "STAGE_STATUS_OKSTOPONSTAGE") {
+        return './img/bocadillo/StopStageOk.png'
+      }            
+      else if (vehicle_state ==  "1MIN") {
+        return './img/bocadillo/1Min.png'
+      }
+      else if (vehicle_state ==  "OLD") {
+        return './img/bocadillo/Grey.png'
+      }
+      else {
+        return './img/bocadillo/Stage.png'
+      }
+    }
 
-      function getCarImage(ident, tracking_state, vehicle_state, alarm_state) 
-      {
-        if (ident=='001') {
-
+    function getCarImage(ident, tracking_state, vehicle_state, alarm_state) 
+    {
+      if (ident=='001') {
           var i=0;
-        }
-
-                  //return './img/car/Capo.png'
-                  if (alarm_state !=  "0") {
-                    return './img/car/Panic.png'
-                  }
-                  else if ((vehicle_state ==  "CAR_HOOD_OPEN") || (vehicle_state ==  "CAR_TRUNK_OPEN")) {
-                    return './img/car/Capo.png'
-                  }
-                  else if (vehicle_state ==  "YELLOW_FLAG_CONFIRM") {
-                    return './img/car/GreenFlag.png'
-                  }
-        /*
-        else if (tracking_state ==  "STOP") {
-          return './img/car/Stop.png'
-        }
-        else if (vehicle_state ==  "VEHICLE_STOPPED") {
-          return './img/car/Stop.png'
-        } */           
-        else if ((tracking_state ==  "STOP") && (vehicle_state ==  "VEHICLE_STOPPED")) {
-          return './img/car/Stop.png'
-        }
-        else if (vehicle_state ==  "STAGE_STATUS_STOPONSTAGE") {
-          return './img/car/StopStage.png'
-        }            
-        else if (vehicle_state ==  "STAGE_STATUS_OKSTOPONSTAGE") {
-          return './img/car/StopStageOk.png'
-        }            
-        else if (vehicle_state ==  "1MIN") {
-          return './img/car/1Min.png'
-        }
-        else if (vehicle_state ==  "OLD") {
-          return './img/car/Grey.png'
-        }
-        else {
-          return './img/car/Stage.png'
-        }
       }
-
-      function check_car(car, new_car, lat, lon) {
-        if (car == new_car) {
-          lat_view = lat;
-          lon_view = lon;
-
-          var new_view = new ol.View({
-            center: ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'),
-            zoom: map.getView().getZoom()
-          });
-
-          var new_pos = ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857');
-
-          var pan = ol.animation.pan({
-            duration: 700,
-            source:  (map.getView().getCenter()),
-          });
-          map.beforeRender(pan);
-          map.setView(new_view);
-        }
+        //return './img/car/Capo.png'
+      if (alarm_state !=  "0") {
+        return './img/Panic/FiaPanic'+ident+'.png'
       }
-
-
-
-
-      function getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
+      else if ((vehicle_state ==  "CAR_HOOD_OPEN") || (vehicle_state ==  "CAR_TRUNK_OPEN")) {
+        return './img/CapoMaletero/FiaCapoMaletero'+ident+'.png'
       }
-
-      function getRandomArbitrary(min, max) {
-        return Math.random() * (max - min) + min;
+      else if (vehicle_state ==  "YELLOW_FLAG_CONFIRM") {
+        return './img/YellowFlagConfirm/FiaYellowFlagConfirm'+ident+'.png'
       }
+      else if ((tracking_state ==  "STOP") && (vehicle_state ==  "VEHICLE_STOPPED")) {
+        return './img/Stop/FiaStop'+ident+'.png'
+      }
+      else if (vehicle_state ==  "STAGE_STATUS_STOPONSTAGE") {
+        return './img/StopOnStage/FiaStopOnStage'+ident+'.png'
+      }           
+      else if (vehicle_state ==  "STAGE_STATUS_OKSTOPONSTAGE") {
+        return './img/OkAfterStop/FiaStopConfirmated'+ident+'.png'
+      }            
+      else if (vehicle_state ==  "1MIN") {
+        return './img/car/1Min.png'
+      }
+      else if (vehicle_state ==  "OLD") {
+        return './img/car/Grey.png'
+      }
+      else {
+        return './img/car/Stage.png'
+      }
+   }
 
-      function add(ident, alias, lon, lat, speed, heading, tracking_state, vehicle_state, alarm_state) {
-       var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326',     
-         'EPSG:3857'));
 
-       var iconFeature = new ol.Feature({
-        geometry: geo_point,
-        name: alias
-  //name: alias + "\n" + speed
-});
+  function check_car(car, new_car, lat, lon) {
+    if (car == new_car) {
+      lat_view = lat;
+      lon_view = lon;
 
-       var image_src = getCarImage(ident, tracking_state, vehicle_state, alarm_state); 
-       var image_bocadillo_src = getBocadilloImage(ident, tracking_state, vehicle_state, alarm_state); 
+      var new_view = new ol.View({
+        center: ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'),
+        zoom: map.getView().getZoom()
+      });
 
- /*
- var icon_scale = 1;
- if ((image_src.indexOf('Panic')!=-1) || (image_src.indexOf('CapoMaletero')!=-1) || (image_src.indexOf('YellowFlagConfirm')!=-1))
-  icon_scale = 0.8;
- var image_src = './FiaOnStage2.png';
- icon_scale = 0.8;
- */
+      var new_pos = ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857');
 
- var iconStyle;
+      var pan = ol.animation.pan({
+        duration: 700,
+        source:  (map.getView().getCenter()),
+      });
+      map.beforeRender(pan);
+      map.setView(new_view);
+    }
+  }
+
+  function add(ident, alias, lon, lat, speed, heading, tracking_state, vehicle_state, alarm_state) {
+    var geo_point = new ol.geom.Point(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
+
+    var iconFeature = new ol.Feature({
+      geometry: geo_point,
+      name: alias
+    });
+
+    var image_src = getCarImage(ident, tracking_state, vehicle_state, alarm_state); 
+    var image_bocadillo_src = getBocadilloImage(ident, tracking_state, vehicle_state, alarm_state); 
+
+    var iconStyle;
+    var iconScale = 1.1;
 
   //if (speed<1)
   //  heading = 90;
-  if ((image_src.indexOf('Capo')>-1) || (image_src.indexOf('GreenFlag')>-1))
-    heading = 0;
+  if (image_src.indexOf('Fia')>-1) {
+    //if ((image_src.indexOf('Panic')!=-1) || (image_src.indexOf('CapoMaletero')!=-1) || (image_src.indexOf('YellowFlagConfirm')!=-1) || (image_src.indexOf('FiaStopOnStage')!=-1) || (image_src.indexOf('FiaStopConfirmated')!=-1)) {
+  
+    iconScale = 0.8;
+
+  
 
   iconStyle = [new ol.style.Style({
     image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-     scale: 1.1,
+     scale: 0.8,
+     rotation: 0,
+     src: image_src
+   }))
+  })
+  
+  ];
+
+}
+else{
+iconStyle = [new ol.style.Style({
+    image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+     scale: iconScale,
      rotation: heading * Math.PI / 180,
      src: image_src
    }))
@@ -423,6 +373,8 @@
   })
   })
   ];
+}
+
 
 //}
 
@@ -433,44 +385,27 @@ vectorSource.addFeature(iconFeature);
 
 if (image_bocadillo_src.indexOf('StopStageOk')!=-1) 
 {
-  car_status[ident] = "StopStageOk";
   vectorSourceStopStageOk.addFeature(iconFeature); 
 }
 else if (image_bocadillo_src.indexOf('StopStage')!=-1) {
-  car_status[ident] = "StopStage";
   vectorSourceStopStage.addFeature(iconFeature); 
 }
 else if (image_bocadillo_src.indexOf('Stop')!=-1) {
-  car_status[ident] = "Stop";
   vectorSourceStop.addFeature(iconFeature); 
 }
 else if (image_bocadillo_src.indexOf('Panic')!=-1) {
-  car_status[ident] = "Panic";
   vectorSourcePanic.addFeature(iconFeature); 
 }
 else{
-  car_status[ident] = "Normal";
   vectorSourceNormal.addFeature(iconFeature); 
 }
 
 }
 
 function initLayer() {
-  /*
-  var valores=getGET();
-  if(valores)
-  {
-    // hacemos un bucle para pasar por cada indice del array de valores
-    for(var index in valores)
-    {
-      //alert(valores[index]);
-      car = valores[index];
-    }
-  }*/
-  
   car = getGETcar();
 
-  $.getJSON( "./tracking_wrc.json", function( data ) {
+  $.getJSON( "./tracking_wrc.json?" + new Date().getTime(), function( data ) {
    var items = [];
    $.each( data, function( key, val ) {
      add (val.properties.license,val.properties.alias,val.geometry.coordinates[0],val.geometry.coordinates[1],val.properties.speed,val.properties.heading,val.properties.tracking_state,val.properties.vehicle_state, val.properties.alarm_state);
@@ -510,36 +445,27 @@ function check(ident,alias,lon,lat,speed,heading,tracking_state,vehicle_state, a
    //TODO: lo quito para que siempre salgan los coches ordenados ?
    //if (dict[ident][0] != lon  || dict[ident][1] != lat) 
    //{
-    if (car_status[ident] = "StopStageOk") {
+    
       iFeature = vectorSourceStopStageOk.getFeatureById(ident);
       if (iFeature!=null) {
         vectorSourceStopStageOk.removeFeature(iFeature);
       }
-    }
-    else if (car_status[ident] = "StopStage") {
       iFeature = vectorSourceStopStage.getFeatureById(ident);
       if (iFeature!=null) {
         vectorSourceStopStage.removeFeature(iFeature);
       }        
-    }
-    else if (car_status[ident] = "Stop") {
       iFeature = vectorSourceStop.getFeatureById(ident);
       if (iFeature!=null) {
         vectorSourceStop.removeFeature(iFeature);
       }
-    }
-    else if (car_status[ident] = "Panic") {
       iFeature = vectorSourcePanic.getFeatureById(ident);
       if (iFeature!=null) {
         vectorSourcePanic.removeFeature(iFeature);
       }        
-    }
-    else if (car_status[ident] = "Normal") {
       iFeature = vectorSourceNormal.getFeatureById(ident);
       if (iFeature!=null) {
         vectorSourceNormal.removeFeature(iFeature);
       }        
-    }
 
     iFeature = vectorSource.getFeatureById(ident);
     if (iFeature!=null) {
