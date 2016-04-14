@@ -59,15 +59,34 @@
     top: 3em;
   }
 
+.ol-zoom {
+      top: 123px;
+      left: 10px;
+
+    }
+
   .ol-zoomslider {
     width: 200px;
     height: 25px;
     left: 3em;
-    top: 0.5em;
+    top: 123px;
   }
   .ol-zoomslider-thumb {
     height: 16px;
   }
+
+#attr
+{
+    position:absolute; 
+    left:5px; 
+    top: 5px; 
+    z-index:10000; 
+    width:300px; 
+    height:120px; 
+    background-image: url("./img/placa2.png");
+}
+
+}
 </style>
 
 <script type="text/javascript">    
@@ -94,6 +113,7 @@
    <div class="row-fluid">
     <div class="span12">
      <div id="map" class="map">
+     <div id="attr"></div>
       <div id="info"></div>
     </div>
   </div>
@@ -481,6 +501,7 @@ function check(ident,alias,lon,lat,speed,heading,tracking_state,vehicle_state, a
 
  }
 
+
  var toner = new ol.layer.Tile({
    title: 'Toner',
    type: 'base',
@@ -516,7 +537,15 @@ function check(ident,alias,lon,lat,speed,heading,tracking_state,vehicle_state, a
    source: new ol.source.OSM()
  });
 
+/*
+var attribution = new ol.control.Attribution({
+  collapsible: false
+
+});*/
+
  var map = new ol.Map({
+  //controls: ol.control.defaults({ attribution: false }).extend([attribution]),
+
    layers: [
 
    new ol.layer.Group({
