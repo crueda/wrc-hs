@@ -200,7 +200,7 @@
          visible: true,
 
          source: new ol.source.Vector({
-           url: './kml/mexico.kml',
+           url: './kml/mexico2.kml',
            format: new ol.format.KML()
          })
        });
@@ -210,7 +210,7 @@
          visible: true,
 
          source: new ol.source.Vector({
-           url: './kml/argentina2016.kml',
+           url: './kml/argentina2.kml',
            format: new ol.format.KML()
          })
        });
@@ -252,7 +252,6 @@
       if (ident=='001') {
           var i=0;
       }
-        //return './img/car/Capo.png'
       if (alarm_state !=  "0") {
         return './img/Panic/FiaPanic'+ident+'.png'
       }
@@ -263,7 +262,8 @@
         return './img/YellowFlagConfirm/FiaYellowFlagConfirm'+ident+'.png'
       }
       else if ((tracking_state ==  "STOP") && (vehicle_state ==  "VEHICLE_STOPPED")) {
-        return './img/Stop/FiaStop'+ident+'.png'
+        //return './img/Stop/FiaStop'+ident+'.png'
+        return './img/car/Stop.png'
       }
       else if (vehicle_state ==  "STAGE_STATUS_STOPONSTAGE") {
         return './img/StopOnStage/FiaStopOnStage'+ident+'.png'
@@ -415,7 +415,8 @@ function initLayer() {
       check_car(car, val.properties.license,val.geometry.coordinates[1],val.geometry.coordinates[0]);
       var init_view = new ol.View({
         center: ol.proj.transform([val.geometry.coordinates[1],val.geometry.coordinates[0]], 'EPSG:4326', 'EPSG:3857'),
-        zoom: 14
+        zoom: 14,
+        maxZoom:18
       });
       map.setView(init_view);
     }
@@ -548,7 +549,9 @@ function check(ident,alias,lon,lat,speed,heading,tracking_state,vehicle_state, a
              //center: ol.proj.transform([-101.6579, 21.1119], 'EPSG:4326', 'EPSG:3857'),
              //zoom: 14
              center: ol.proj.transform([-101.66, 21.11], 'EPSG:4326', 'EPSG:3857'),
-             zoom: 11
+             zoom: 11,
+             maxZoom:18
+
 
            })
  });
