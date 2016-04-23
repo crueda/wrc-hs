@@ -109,7 +109,7 @@
 
 
 <script>
- window.onload = function() { initLayer(); setInterval(reloadLayer,1000); };
+ window.onload = function() { reloadTiming(); setInterval(reloadLayer,1000); };
 
  $(document).ready(function() {
   $.ajaxSetup({ cache: false });
@@ -124,7 +124,8 @@
    <div class="row-fluid">
     <div class="span12">
      <div id="map" class="map">
-     <div id="attr"></div>
+     <div id="attr"> 
+    </div>
      <div id="timing">
 <table cellpadding="10" cellspacing="0" class="generic-table" id="stageTable">
 <tbody>
@@ -146,9 +147,9 @@
 <tbody id="rows-stage">
 
 <tr class="active">
-  <td class="rPos">1</td>
+  <td id="pos1" class="rPos">1</td>
   <td class="rNr">1</td>
-  <td class="rEntry">Sebastien OGIER</td>
+  <td id ="pos1driver" class="rEntry">Sebastien OGIER</td>
   <td class="rGap ">9:57.1</td>
 </tr>
 
@@ -582,12 +583,21 @@ function reloadTiming() {
  $.getJSON( "./timing.json", function( data ) {
    var items = [];
    $.each( data, function( key, val ) {
-     setTiming (val.properties.license,val.properties.alias,val.geometry.coordinates[0],val.geometry.coordinates[1],val.properties.speed,val.properties.heading,val.properties.tracking_state,val.properties.vehicle_state, val.properties.alarm_state);
-
-
+     setTiming (val.properties.pos,val.properties.nr,val.properties.driver,val.properties.diff);     
   });               
  });
 }
+
+
+function setTiming (pos,nr,driver,diff) {
+
+document.getElementById('pos1driver').innerHTML = driver;
+  //alert("AA");
+  if (pos==1) {
+var f=0;
+}
+
+}     
 
 function check(ident,alias,lon,lat,speed,heading,tracking_state,vehicle_state, alarm_state) {             
  if (ident=='001') 
