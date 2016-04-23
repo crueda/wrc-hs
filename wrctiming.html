@@ -94,7 +94,6 @@
     top: 130px; 
     z-index:10000; 
     width:300px; 
-    height:720px; 
     background-image: url("./img/fondo.png");
 }
 
@@ -128,26 +127,101 @@
      <div id="attr"></div>
      <div id="timing">
 <table cellpadding="10" cellspacing="0" class="generic-table" id="stageTable">
-<tbody><tr class="top0">
-<th>SS 05</th>
+<tbody>
+<tr class="top0" align="center">
+<th class="top1" ><h4>SS05  -  El Condor-Copina</h4></th>
+</tr>
+<tr class="top0">
+<th class="top1" align="center"><h5></h5></th>
 </tr>
 <tr class="t0">
 <th class="hPos">Pos</th>
 <th class="hNr">Nr</th>
 <th class="hEntry">Entry</th>
 <th class="hGap">Diff 1st</th>
-<th class="hInterval">Diff Prev</th>
 </tr>
+</tbody>
 
-</tbody><tbody id="rows-stage">
+
+<tbody id="rows-stage">
+
 <tr class="active">
   <td class="rPos">1</td>
   <td class="rNr">1</td>
   <td class="rEntry">Sebastien OGIER</td>
-  <td class="rTime ">9:57.1</td>
-  <td class="rGap"></td>
-  <td class="rInterval"></td>
+  <td class="rGap ">9:57.1</td>
 </tr>
+
+<tr class="active">
+  <td class="rPos">2</td>
+  <td class="rNr">4</td>
+  <td class="rEntry">Dani SORDO</td>
+  <td class="rGap ">+0:02.1</td>
+</tr>
+
+<tr class="active">
+  <td class="rPos">3</td>
+  <td class="rNr">20</td>
+  <td class="rEntry">Hayden PADDON</td>
+  <td class="rGap ">+0:06.9</td>
+</tr>
+
+<tr class="active">
+  <td class="rPos">4</td>
+  <td class="rNr">9</td>
+  <td class="rEntry">Andreas MIKKELSEN</td>
+  <td class="rGap ">+0:12.4</td>
+</tr>
+
+<tr class="active">
+  <td class="rPos">5</td>
+  <td class="rNr">2</td>
+  <td class="rEntry">Jari-Matti LATVALA</td>
+  <td class="rGap ">+0:23.5</td>
+</tr>
+
+<tr class="active">
+  <td class="rPos">6</td>
+  <td class="rNr">5</td>
+  <td class="rEntry">Mads OSTBERG</td>
+  <td class="rGap ">+0:35.2</td>
+</tr>
+
+<tr class="active">
+  <td class="rPos">7</td>
+  <td class="rNr">16</td>
+  <td class="rEntry">Henning SOLBERG</td>
+  <td class="rGap ">+0:42.5</td>
+</tr>
+
+<tr class="active">
+  <td class="rPos">7</td>
+  <td class="rNr">16</td>
+  <td class="rEntry">Henning SOLBERG</td>
+  <td class="rGap ">+0:42.5</td>
+</tr>
+
+<tr class="active">
+  <td class="rPos">8</td>
+  <td class="rNr">3</td>
+  <td class="rEntry">Thierry NEUVILLE</td>
+  <td class="rGap ">+1:12.7</td>
+</tr>
+
+<tr class="active">
+  <td class="rPos">9</td>
+  <td class="rNr">6</td>
+  <td class="rEntry">Eric CAMILLI</td>
+  <td class="rGap ">+1:23.5</td>
+</tr>
+
+<tr class="active">
+  <td class="rPos">10</td>
+  <td class="rNr">88</td>
+  <td class="rEntry">Geronimo PADILLA</td>
+  <td class="rGap ">+1:34.2</td>
+</tr>
+
 
 
 
@@ -499,6 +573,18 @@ function reloadLayer() {
 
      if (car != null)
       check_car(car, val.properties.license,val.geometry.coordinates[1],val.geometry.coordinates[0]);
+  });               
+ });
+}
+
+
+function reloadTiming() {
+ $.getJSON( "./timing.json", function( data ) {
+   var items = [];
+   $.each( data, function( key, val ) {
+     setTiming (val.properties.license,val.properties.alias,val.geometry.coordinates[0],val.geometry.coordinates[1],val.properties.speed,val.properties.heading,val.properties.tracking_state,val.properties.vehicle_state, val.properties.alarm_state);
+
+
   });               
  });
 }
