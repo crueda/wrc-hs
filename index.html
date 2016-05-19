@@ -289,6 +289,8 @@ function getGETcar()
   if ((image_src.indexOf('Panic')!=-1) || (image_src.indexOf('CapoMaletero')!=-1) || (image_src.indexOf('YellowFlagConfirm')!=-1) || (image_src.indexOf('FiaStopOnStage')!=-1) || (image_src.indexOf('FiaStopConfirmated')!=-1))
     icon_scale = 0.8;
 
+//alert(map.getView().getZoom());
+
      var iconStyle = new ol.style.Style({
       image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
        scale: icon_scale,
@@ -363,6 +365,19 @@ function getGETcar()
 
   }
 
+  var heatmap = new ol.layer.Heatmap({
+                        title: 'Heatmap',
+                        name: 'Heatmap',
+                        source: new ol.source.Vector({
+  url: './tracking_wrc.json',
+  format: new ol.format.GeoJSON()
+}),
+                        //style: styleFunction,
+                        radius: 4,
+                        visible: false
+                        });
+
+
            var toner = new ol.layer.Tile({
              title: 'Toner',
              type: 'base',
@@ -414,7 +429,7 @@ function getGETcar()
 
              new ol.layer.Group({
                'title': 'WRC',
-               layers: [vectorKmlRallySuecia, vectorKmlRallyMexico, vectorLayer
+               layers: [vectorKmlRallySuecia, vectorKmlRallyMexico, vectorLayer, heatmap
                ]
              })
 
