@@ -60,7 +60,7 @@
   }
 
   .ol-zoom {
-    top: 123px;
+    top: 7px;
     left: 10px;
 
   }
@@ -69,7 +69,7 @@
     width: 200px;
     height: 25px;
     left: 3em;
-    top: 123px;
+    top: 7px;
   }
   .ol-zoomslider-thumb {
     height: 16px;
@@ -82,8 +82,8 @@
     top: 5px; 
     z-index:10000; 
     width:295px; 
-    height:120px; 
-    background-image: url("./img/placaRally.png");
+    height:145px; 
+    background-image: url("./img/placaRallySardegna.png");
   }
 
 }
@@ -114,7 +114,7 @@
    <div class="row-fluid">
     <div class="span12">
      <div id="map" class="map">
-       <div id="attr"></div>
+       <!--div id="attr"></div-->
        <div id="info"></div>
      </div>
    </div>
@@ -216,57 +216,18 @@
 
   var projection = ol.proj.get('EPSG:3857');
 
-  var vectorKmlRallyMexico = new ol.layer.Vector({
-   title: 'WRC Mexico 2016',
-   visible: true,
-
-   source: new ol.source.Vector({
-     url: './kml/mexico2.kml',
-     format: new ol.format.KML()
-   })
- });
-
+  
   var vectorKmlRally = new ol.layer.Vector({
-   title: 'WRC Portugal 2016',
+   title: 'WRC Poland 2016',
    visible: true,
 
    source: new ol.source.Vector({
-     url: './kml/RallyPortugal.kml',
+     url: './kml/Rally.kml',
      format: new ol.format.KML()
    })
  });
 
-  function getBocadilloImage(ident, tracking_state, vehicle_state, alarm_state) 
-  {
-      // return './img/bocadillo/White.png'
-      if (alarm_state !=  "0") {
-        return './img/bocadillo/Panic.png'
-      }
-      else if ((vehicle_state ==  "CAR_HOOD_OPEN") || (vehicle_state ==  "CAR_TRUNK_OPEN")) {
-        return './img/bocadillo/White.png'
-      }
-      else if (vehicle_state ==  "YELLOW_FLAG_CONFIRM") {
-        return './img/bocadillo/White.png'
-      }
-      else if ((tracking_state ==  "STOP") && (vehicle_state ==  "VEHICLE_STOPPED")) {
-        return './img/bocadillo/Stop.png'
-      }
-      else if (vehicle_state ==  "STAGE_STATUS_STOPONSTAGE") {
-        return './img/bocadillo/StopStage.png'
-      }            
-      else if (vehicle_state ==  "STAGE_STATUS_OKSTOPONSTAGE") {
-        return './img/bocadillo/StopStageOk.png'
-      }            
-      else if (vehicle_state ==  "1MIN") {
-        return './img/bocadillo/1Min.png'
-      }
-      else if (vehicle_state ==  "OLD") {
-        return './img/bocadillo/Grey.png'
-      }
-      else {
-        return './img/bocadillo/Stage.png'
-      }
-    }
+
 
     function getCarImage(ident, tracking_state, vehicle_state, alarm_state) 
     {
@@ -288,7 +249,7 @@
         //return './img/Stop/FiaStop'+ident+'.png'
         
         //return './img/car/Stop.png'
-        return './img/car/Stop2.png'
+        return './img/car/Stop4.png'
 
       }
       else if (vehicle_state ==  "STAGE_STATUS_STOPONSTAGE") {
@@ -301,10 +262,10 @@
         return './img/car/1Min.png'
       }
       else if (vehicle_state ==  "OLD") {
-        return './img/car/Grey2.png'
+        return './img/car/Grey4.png'
       }
       else {
-        return './img/car/Stage2.png'
+        return './img/car/Stage4.png'
       }
     }
 
@@ -339,13 +300,61 @@
       });
 
       var image_src = getCarImage(ident, tracking_state, vehicle_state, alarm_state); 
-      var image_bocadillo_src = getBocadilloImage(ident, tracking_state, vehicle_state, alarm_state); 
-
+      
       var iconStyle;
       var iconScale = 1;
 
-iconScale = 1.3 - map.getView().getZoom() * 0.02
+if (ident=='005')
+  var kk=1;
 
+//iconScale = 1.3 - map.getView().getZoom() * 0.02
+iconScale = 0.7 + (map.getView().getZoom()-10) * 0.07
+iconScale = 0.75;
+
+//heading =280;
+var font_offsetX = 0;
+var font_offsetY = 0;
+
+
+if (heading > 0 && heading < 30) {
+font_offsetX = 0;
+font_offsetY = 5;
+}
+else if (heading >= 30 && heading < 45) {
+font_offsetX = -1;
+font_offsetY = 3;
+}
+else if (heading >= 45 && heading < 90) {
+font_offsetX = -1;
+font_offsetY = 1;
+}
+else if (heading >= 90 && heading < 135) {
+font_offsetX = -2;
+font_offsetY = 0;
+}
+else if (heading >= 135 && heading < 180) {
+font_offsetX = 0;
+font_offsetY = 1;
+}
+else if (heading >= 180 && heading < 225) {
+font_offsetX = 0;
+font_offsetY = -3;
+}
+else if (heading >= 225 && heading < 270) {
+font_offsetX = 2;
+font_offsetY = 1;
+}
+else if (heading >= 270 && heading < 315) {
+font_offsetX = 3;
+font_offsetY = 0;
+}
+else if (heading >= 315 && heading < 360) {
+font_offsetX = 2;
+font_offsetY = 2;
+}
+
+
+/*
 var font_offsetY = -2;
 if (heading > 270 && heading < 90)
   var font_offsetY = -5;
@@ -353,19 +362,18 @@ if (heading > 270 && heading < 90)
 var font_offsetX = 0;
 if (heading > 0 && heading < 130)
   var font_offsetX = -5;
+*/
 
-if (ident==049)
-  a=1;
+
+
       var rotationText = (heading.toFixed() * Math.PI / 180) - Math.PI/2;
       if (heading>180 && heading<360)
         rotationText = (heading.toFixed() * Math.PI / 180) + Math.PI/2;
 
-  //if (speed<1)
-  //  heading = 90;
   if (image_src.indexOf('Fia')>-1) {
     //if ((image_src.indexOf('Panic')!=-1) || (image_src.indexOf('CapoMaletero')!=-1) || (image_src.indexOf('YellowFlagConfirm')!=-1) || (image_src.indexOf('FiaStopOnStage')!=-1) || (image_src.indexOf('FiaStopConfirmated')!=-1)) {
 
-      iconScale = 0.8;
+      //iconScale = 0.8;
       iconStyle = [new ol.style.Style({
         image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
          scale: 0.8,
@@ -391,20 +399,22 @@ if (ident==049)
     text: new ol.style.Text({
       text: parseInt(ident),
       //text: 360 * heading.toFixed() * Math.PI / 180,
-      fontFamily: 'Calibri,sans-serif',
+      //fontFamily: 'Calibri,sans-serif',
+      font: '11px Calibri,sans-serif',
+
       offsetY: font_offsetY,
       offsetX: font_offsetX,
       //rotation: (heading * Math.PI / 180)+45,
-      rotation: rotationText,
+      //rotation: rotationText,
       //(heading.toFixed() * Math.PI / 180) + Math.PI/2 ,
-      scale: iconScale + 0.25,
+      scale: iconScale + 0.7,
       fill: new ol.style.Fill({
       color: '#fff'
     }),
     stroke: new ol.style.Stroke({
       //color: '#096a1e',
       color: '#000',
-      width: 3.5
+      width: 2.2
     })
   })
   })
@@ -420,17 +430,17 @@ iconFeature.setId(ident);
 
 vectorSource.addFeature(iconFeature); 
 
-if (image_bocadillo_src.indexOf('StopStageOk')!=-1) 
+if (image_src.indexOf('StopStageOk')!=-1) 
 {
   vectorSourceStopStageOk.addFeature(iconFeature); 
 }
-else if (image_bocadillo_src.indexOf('StopStage')!=-1) {
+else if (image_src.indexOf('StopStage')!=-1) {
   vectorSourceStopStage.addFeature(iconFeature); 
 }
-else if (image_bocadillo_src.indexOf('Stop')!=-1) {
+else if (image_src.indexOf('Stop')!=-1) {
   vectorSourceStop.addFeature(iconFeature); 
 }
-else if (image_bocadillo_src.indexOf('Panic')!=-1) {
+else if (image_src.indexOf('Panic')!=-1) {
   vectorSourcePanic.addFeature(iconFeature); 
 }
 else{
@@ -443,6 +453,7 @@ else{
 
 function reloadLayer() {
  $.getJSON( "./tracking_wrc.json?" + new Date().getTime(), function( data ) {
+
    var items = [];
    $.each( data, function( key, val ) {
      processCar (val.properties.license,val.properties.alias,val.geometry.coordinates[0],val.geometry.coordinates[1],val.properties.speed,val.properties.heading,val.properties.tracking_state,val.properties.vehicle_state, val.properties.alarm_state, val.properties.pos_date);
@@ -557,16 +568,10 @@ var map = new ol.Map({
   ],
   target: 'map',
   view: new ol.View({
-             //center: ol.proj.transform([-101.6579, 21.1119], 'EPSG:4326', 'EPSG:3857'),
-             //zoom: 14
-            center: ol.proj.transform([-8.69, 41.20], 'EPSG:4326', 'EPSG:3857'),
-
-             zoom: 11,
-             maxZoom:20
-
-
-
-           })
+    center: ol.proj.transform([21.54, 53.80], 'EPSG:4326', 'EPSG:3857'),
+    zoom: 11,
+    maxZoom:20
+  })
 });
 
 
