@@ -104,12 +104,13 @@
   #timing
 {
     position:absolute; 
-    display: block;
+    display: none;
     left:10px; 
     top: 50px; 
     z-index:2; 
     width:300px; 
     background-image: url("./img/fondo.png");
+    opacity: 0;
 }
 
   #open
@@ -164,6 +165,7 @@
 
 <script>
   function closeTiming() {
+    
     var op = 1;  // initial opacity
     var timer = setInterval(function () {
         if (op <= 0.1){
@@ -174,24 +176,26 @@
         document.getElementById('timing').style.filter = 'alpha(opacity=' + op * 100 + ")";
         op -= op * 0.5;
     }, 50);
-
+    
     //document.getElementById('timing').style.opacity = 0;
   }
 
   function openTiming() {
-    /*
-    var op = 1;  // initial opacity
+    document.getElementById('timing').style.display = 'block';
+    
+    var op = 0.1;  // initial opacity
     var timer = setInterval(function () {
-        if (op >= 0.1){
+        if (op >= 0.9){
             clearInterval(timer);
-            document.getElementById('timing').style.display = 'none';
         }
         document.getElementById('timing').style.opacity = op;
         document.getElementById('timing').style.filter = 'alpha(opacity=' + op * 100 + ")";
         op += op * 0.5;
     }, 50);
-*/
-    document.getElementById('timing').style.opacity = 1;
+
+
+    //document.getElementById('timing').style.opacity = 1;
+
   }
 </script>
 
@@ -336,7 +340,7 @@
 
      </div>
        <div id="info"></div>
-       <div id="infoCar"></div>
+       <!--div id="infoCar"></div-->
      </div>
    </div>
  </div>
