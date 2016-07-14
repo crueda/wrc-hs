@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="./css/sit.css" type="text/css">
   <script src="http://openlayers.org/en/v3.9.0/build/ol.js"></script>
   <script src="./js/ol3-layerswitcher.js" type="text/javascript"></script>
+   <script src="./js/jquery.slide-transition.js"></script>
 
   <style>
    #map {
@@ -27,6 +28,14 @@
      width: 1px;
      z-index: 100;
    }
+   #infoCar {
+     position: absolute;
+     height: 100px;
+     width: 100px;
+     top: 10;
+     right:110;
+     z-index: 101;
+   }
    .tooltip.in {
      opacity: 1;
      filter: alpha(opacity=100);
@@ -37,6 +46,7 @@
    .tooltip-inner {
      border: 2px solid white;
    }
+
 
  </style>
 
@@ -76,6 +86,10 @@
     height: 16px;
   }
 
+
+
+
+
   #attr
   {
     position:absolute; 
@@ -90,16 +104,98 @@
   #timing
 {
     position:absolute; 
+    display: block;
     left:10px; 
     top: 50px; 
-    z-index:10000; 
+    z-index:2; 
     width:300px; 
     background-image: url("./img/fondo.png");
 }
 
+  #open
+{
+    position:absolute; 
+    display: block;
+    left:10px; 
+    top: 50px; 
+    z-index:1; 
+    width:38px; 
+    padding: 5px;
+    background-image: url("./img/fondo.png");
+    &.a {
+      position:absolute;
+      width:100%;
+      height:100%;
+      top:0;
+      left:0;
+      text-decoration:none; /* Makes sure the link   doesn't get underlined */
+      z-index:10; /* raises anchor tag above everything else in div */
+      background-color:white; /*workaround to make clickable in IE */
+      opacity: 0; /*workaround to make clickable in IE */
+      filter: alpha(opacity=1); /*workaround to make clickable in IE */
+    }
+}
+   #close{
+    position: absolute;
+    height: 3rem;
+    width: 3rem;
+    line-height: 3rem;
+    text-align: right;
+    top: -5px;
+    right: 4px;
+    &.a {
+      position:absolute;
+      width:100%;
+      height:100%;
+      top:0;
+      left:0;
+      text-decoration:none; /* Makes sure the link   doesn't get underlined */
+      z-index:10; /* raises anchor tag above everything else in div */
+      background-color:white; /*workaround to make clickable in IE */
+      opacity: 0; /*workaround to make clickable in IE */
+      filter: alpha(opacity=1); /*workaround to make clickable in IE */
+    }
+   }
+
+
 
 }
 </style>
+
+<script>
+  function closeTiming() {
+    var op = 1;  // initial opacity
+    var timer = setInterval(function () {
+        if (op <= 0.1){
+            clearInterval(timer);
+            document.getElementById('timing').style.display = 'none';
+        }
+        document.getElementById('timing').style.opacity = op;
+        document.getElementById('timing').style.filter = 'alpha(opacity=' + op * 100 + ")";
+        op -= op * 0.5;
+    }, 50);
+
+    //document.getElementById('timing').style.opacity = 0;
+  }
+
+  function openTiming() {
+    /*
+    var op = 1;  // initial opacity
+    var timer = setInterval(function () {
+        if (op >= 0.1){
+            clearInterval(timer);
+            document.getElementById('timing').style.display = 'none';
+        }
+        document.getElementById('timing').style.opacity = op;
+        document.getElementById('timing').style.filter = 'alpha(opacity=' + op * 100 + ")";
+        op += op * 0.5;
+    }, 50);
+*/
+    document.getElementById('timing').style.opacity = 1;
+  }
+</script>
+
+
 
 <script type="text/javascript">    
  var dict = {};
@@ -111,13 +207,25 @@
 
 
 <script>
- window.onload = function() { setInterval(reloadLayer,930); };
+ window.onload = function() { setInterval(reloadLayer,930); setInterval(reloadTiming,1000);};
 
  $(document).ready(function() {
   $.ajaxSetup({ cache: false });
 });
 
 </script>
+
+    <script>
+    
+    $("#Trigger").click(function () {
+        if ($("#SlideWrapper").hasClass("height-transition-hidden"))
+            $("#SlideWrapper").slideDownTransition();
+        else
+            $("#SlideWrapper").slideUpTransition();
+    });
+
+    </script>
+
 </head>
 <body>
 
@@ -127,11 +235,15 @@
     <div class="span12">
      <div id="map" class="map">
        <!--div id="attr"></div-->
+       <div id="open"><a href="javascript:openTiming();">Timing</a></div> 
        <div id="timing">
+       <div id="close" ><a href="javascript:closeTiming();">X</a></div>
+
+
 <table cellpadding="10" cellspacing="0" class="generic-table" id="stageTable">
 <tbody>
 <tr class="top0" align="center">
-<th class="top1" ><h4>SS05  -  El Condor-Copina</h4></th>
+<th  class="top1" ><h4 id="stageName">--</h4></th>
 </tr>
 <tr class="top0">
 <th class="top1" align="center"><h5></h5></th>
@@ -149,93 +261,80 @@
 
 <tr class="active">
   <td id="pos1" class="rPos">1</td>
-  <td class="rNr">1</td>
-  <td id ="pos1driver" class="rEntry">Sebastien OGIER</td>
-  <td class="rGap ">9:57.1</td>
+  <td id ="pos1nr" class="rNr">-</td>
+  <td id ="pos1driver" class="rEntry">-</td>
+  <td id ="pos1gap" class="rGap ">-</td>
 </tr>
 
 <tr class="active">
   <td class="rPos">2</td>
-  <td class="rNr">4</td>
-  <td class="rEntry">Dani SORDO</td>
-  <td class="rGap ">+0:02.1</td>
+  <td id ="pos2nr" class="rNr">-</td>
+  <td id ="pos2driver" class="rEntry">-</td>
+  <td id ="pos2gap" class="rGap ">-</td>
 </tr>
 
 <tr class="active">
   <td class="rPos">3</td>
-  <td class="rNr">20</td>
-  <td class="rEntry">Hayden PADDON</td>
-  <td class="rGap ">+0:06.9</td>
+  <td class="rNr">-</td>
+  <td class="rEntry">-</td>
+  <td class="rGap ">-</td>
 </tr>
 
 <tr class="active">
   <td class="rPos">4</td>
-  <td class="rNr">9</td>
-  <td class="rEntry">Andreas MIKKELSEN</td>
-  <td class="rGap ">+0:12.4</td>
+  <td class="rNr">-</td>
+  <td class="rEntry">-</td>
+  <td class="rGap ">-</td>
 </tr>
 
 <tr class="active">
   <td class="rPos">5</td>
-  <td class="rNr">2</td>
-  <td class="rEntry">Jari-Matti LATVALA</td>
-  <td class="rGap ">+0:23.5</td>
+  <td class="rNr">-</td>
+  <td class="rEntry">-</td>
+  <td class="rGap ">-</td>
 </tr>
 
 <tr class="active">
   <td class="rPos">6</td>
-  <td class="rNr">5</td>
-  <td class="rEntry">Mads OSTBERG</td>
-  <td class="rGap ">+0:35.2</td>
+  <td class="rNr">-</td>
+  <td class="rEntry">-</td>
+  <td class="rGap ">-</td>
 </tr>
 
 <tr class="active">
   <td class="rPos">7</td>
-  <td class="rNr">16</td>
-  <td class="rEntry">Henning SOLBERG</td>
-  <td class="rGap ">+0:42.5</td>
-</tr>
-
-<tr class="active">
-  <td class="rPos">7</td>
-  <td class="rNr">16</td>
-  <td class="rEntry">Henning SOLBERG</td>
-  <td class="rGap ">+0:42.5</td>
+  <td class="rNr">-</td>
+  <td class="rEntry">-</td>
+  <td class="rGap ">-</td>
 </tr>
 
 <tr class="active">
   <td class="rPos">8</td>
-  <td class="rNr">3</td>
-  <td class="rEntry">Thierry NEUVILLE</td>
-  <td class="rGap ">+1:12.7</td>
+  <td class="rNr">-</td>
+  <td class="rEntry">-</td>
+  <td class="rGap ">-</td>
 </tr>
 
 <tr class="active">
   <td class="rPos">9</td>
-  <td class="rNr">6</td>
-  <td class="rEntry">Eric CAMILLI</td>
-  <td class="rGap ">+1:23.5</td>
+  <td class="rNr">-</td>
+  <td class="rEntry">-</td>
+  <td class="rGap ">-</td>
 </tr>
 
 <tr class="active">
   <td class="rPos">10</td>
-  <td class="rNr">88</td>
-  <td class="rEntry">Geronimo PADILLA</td>
-  <td class="rGap ">+1:34.2</td>
+  <td class="rNr">-</td>
+  <td class="rEntry">-</td>
+  <td class="rGap ">-</td>
 </tr>
-
-
-
-
-
-
-
 
 </tbody>
 </table>
 
      </div>
        <div id="info"></div>
+       <div id="infoCar"></div>
      </div>
    </div>
  </div>
@@ -588,17 +687,75 @@ function reloadTiming() {
  $.getJSON( "./timing.json", function( data ) {
    var items = [];
    $.each( data, function( key, val ) {
-     setTiming (val.properties.pos,val.properties.nr,val.properties.driver,val.properties.diff);     
+     if (val.type == "car_timing")
+      setTiming (val.properties.pos,val.properties.nr,val.properties.driver,val.properties.diff);     
+     if (val.type == "stage_data")
+      setStage (val.properties.stageName);     
+
   });               
  });
 }
 
 
+function setStage (stageName) {
+        document.getElementById('stageName').innerHTML = stageName;
+}
+
 function setTiming (pos,nr,driver,diff) {
-  document.getElementById('pos1driver').innerHTML = driver;
     //alert("AA");
-    if (pos==1) {
-      var f=0;
+    switch(pos) {
+      case 1:
+        document.getElementById('pos1nr').innerHTML = nr;
+        document.getElementById('pos1driver').innerHTML = driver;
+        document.getElementById('pos1gap').innerHTML = diff;
+        break;
+      case 2:
+        document.getElementById('pos2nr').innerHTML = nr;
+        document.getElementById('pos2driver').innerHTML = driver;
+        document.getElementById('pos2gap').innerHTML = diff;
+        break;
+      case 3:
+        document.getElementById('pos3nr').innerHTML = nr;
+        document.getElementById('pos3driver').innerHTML = driver;
+        document.getElementById('pos3gap').innerHTML = diff;
+        break;
+      case 4:
+        document.getElementById('pos4nr').innerHTML = nr;
+        document.getElementById('pos4driver').innerHTML = driver;
+        document.getElementById('pos4gap').innerHTML = diff;
+        break;
+      case 5:
+        document.getElementById('pos5nr').innerHTML = nr;
+        document.getElementById('pos5driver').innerHTML = driver;
+        document.getElementById('pos5gap').innerHTML = diff;
+        break;
+      case 6:
+        document.getElementById('pos6nr').innerHTML = nr;
+        document.getElementById('pos6driver').innerHTML = driver;
+        document.getElementById('pos6gap').innerHTML = diff;
+        break;
+      case 7:
+        document.getElementById('pos7nr').innerHTML = nr;
+        document.getElementById('pos7driver').innerHTML = driver;
+        document.getElementById('pos7gap').innerHTML = diff;
+        break;
+      case 8:
+        document.getElementById('pos8nr').innerHTML = nr;
+        document.getElementById('pos8driver').innerHTML = driver;
+        document.getElementById('pos8gap').innerHTML = diff;
+        break;
+      case 9:
+        document.getElementById('pos9nr').innerHTML = nr;
+        document.getElementById('pos9driver').innerHTML = driver;
+        document.getElementById('pos9gap').innerHTML = diff;
+        break;
+      case 10:
+        document.getElementById('pos10nr').innerHTML = nr;
+        document.getElementById('pos10driver').innerHTML = driver;
+        document.getElementById('pos10gap').innerHTML = diff;
+        break;
+
+
     }
 }     
 
@@ -747,6 +904,12 @@ info.tooltip({
  trigger: 'manual'
 });
 
+var infoCar = $('#infoCar');
+infoCar.tooltip({
+ animation: false,
+ trigger: 'manual'
+});
+
 var displayFeatureInfo = function(pixel) {
  info.css({
    left: pixel[0] + 'px',
@@ -764,19 +927,44 @@ var displayFeatureInfo = function(pixel) {
            } else {
              info.tooltip('hide');
            }
-         };
-         
-         map.on('pointermove', function(evt) {
-           if (evt.dragging) {
-             info.tooltip('hide');
-             return;
+};
+
+var displayCarInfo = function(pixel) {
+ infoCar.css({
+   //left: pixel[0] + 'px',
+   right: 110 + 'px',
+   top: 120 + 'px',
+   width: 100,
+   height: 100
+
+ });
+ var feature = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+   return feature;
+ });
+ if (feature) {
+      //alert(feature.get('name'));
+             infoCar.tooltip('hide')
+             .attr('data-original-title', feature.get('name'))
+             .tooltip('fixTitle')
+             .tooltip('show');
+           } else {
+             infoCar.tooltip('hide');
            }
-           displayFeatureInfo(map.getEventPixel(evt.originalEvent));
-         });
+};
          
-         map.on('click', function(evt) {
-           displayFeatureInfo(evt.pixel);
-         });
+map.on('pointermove', function(evt) {
+  if (evt.dragging) {
+     info.tooltip('hide');
+     return;
+  }
+  displayFeatureInfo(map.getEventPixel(evt.originalEvent));
+  //displayCarInfo(map.getEventPixel(evt.originalEvent));
+});
+         
+map.on('click', function(evt) {
+    displayFeatureInfo(evt.pixel);
+    displayCarInfo(evt.pixel);
+});
          
        </script>
      </body>

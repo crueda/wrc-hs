@@ -1,1 +1,1 @@
-[{"type": "car_timing", "properties": {"pos": 1, "nr": 4, "driver": "Dani SORDO", "diff": "+0:34:3"}}]
+[{"type": "stage_data", "properties": {"stageName": "SS05  -  El Condor-Copina"}},{"type": "car_timing", "properties": {"pos": 1, "nr": 4, "driver": "Dani SORDO", "diff": "+0:34:3"}},{"type": "car_timing", "properties": {"pos": 2, "nr": 1, "driver": "Sebastien OGIER", "diff": "+0:37:3"}}]
