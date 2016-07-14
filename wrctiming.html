@@ -252,7 +252,8 @@
 <th class="hPos">Pos</th>
 <th class="hNr">Nr</th>
 <th class="hEntry">Entry</th>
-<th class="hGap">Diff 1st</th>
+<!--th class="hGap">Diff 1st</th-->
+<th class="hGap">Time</th>
 </tr>
 </tbody>
 
@@ -275,59 +276,60 @@
 
 <tr class="active">
   <td class="rPos">3</td>
-  <td class="rNr">-</td>
-  <td class="rEntry">-</td>
-  <td class="rGap ">-</td>
+  <td id ="pos3nr" class="rNr">-</td>
+  <td id ="pos3driver" class="rEntry">-</td>
+  <td id ="pos3gap" class="rGap ">-</td>
 </tr>
 
 <tr class="active">
   <td class="rPos">4</td>
-  <td class="rNr">-</td>
-  <td class="rEntry">-</td>
-  <td class="rGap ">-</td>
+  <td id ="pos4nr" class="rNr">-</td>
+  <td id ="pos4driver" class="rEntry">-</td>
+  <td id ="pos4gap" class="rGap ">-</td>
 </tr>
 
 <tr class="active">
   <td class="rPos">5</td>
-  <td class="rNr">-</td>
-  <td class="rEntry">-</td>
-  <td class="rGap ">-</td>
+  <td id ="pos5nr" class="rNr">-</td>
+  <td id ="pos5driver" class="rEntry">-</td>
+  <td id ="pos5gap" class="rGap ">-</td>
 </tr>
 
 <tr class="active">
   <td class="rPos">6</td>
-  <td class="rNr">-</td>
-  <td class="rEntry">-</td>
-  <td class="rGap ">-</td>
+  <td id ="pos6nr" class="rNr">-</td>
+  <td id ="pos6driver" class="rEntry">-</td>
+  <td id ="pos6gap" class="rGap ">-</td>
 </tr>
 
 <tr class="active">
   <td class="rPos">7</td>
-  <td class="rNr">-</td>
-  <td class="rEntry">-</td>
-  <td class="rGap ">-</td>
+  <td id ="pos7nr" class="rNr">-</td>
+  <td id ="pos7driver" class="rEntry">-</td>
+  <td id ="pos7gap" class="rGap ">-</td>
 </tr>
 
 <tr class="active">
   <td class="rPos">8</td>
-  <td class="rNr">-</td>
-  <td class="rEntry">-</td>
-  <td class="rGap ">-</td>
+  <td id ="pos8nr" class="rNr">-</td>
+  <td id ="pos8driver" class="rEntry">-</td>
+  <td id ="pos8gap" class="rGap ">-</td>
 </tr>
 
 <tr class="active">
   <td class="rPos">9</td>
-  <td class="rNr">-</td>
-  <td class="rEntry">-</td>
-  <td class="rGap ">-</td>
+  <td id ="pos9nr" class="rNr">-</td>
+  <td id ="pos9driver" class="rEntry">-</td>
+  <td id ="pos9gap" class="rGap ">-</td>
 </tr>
 
 <tr class="active">
   <td class="rPos">10</td>
-  <td class="rNr">-</td>
-  <td class="rEntry">-</td>
-  <td class="rGap ">-</td>
+  <td id ="pos10nr" class="rNr">-</td>
+  <td id ="pos10driver" class="rEntry">-</td>
+  <td id ="pos10gap" class="rGap ">-</td>
 </tr>
+
 
 </tbody>
 </table>
@@ -703,6 +705,7 @@ function setStage (stageName) {
 
 function setTiming (pos,nr,driver,diff) {
     //alert("AA");
+  if (pos<11){
     switch(pos) {
       case 1:
         document.getElementById('pos1nr').innerHTML = nr;
@@ -754,9 +757,8 @@ function setTiming (pos,nr,driver,diff) {
         document.getElementById('pos10driver').innerHTML = driver;
         document.getElementById('pos10gap').innerHTML = diff;
         break;
-
-
     }
+  }
 }     
 
 
