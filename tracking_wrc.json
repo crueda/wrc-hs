@@ -1,1 +1,1 @@
-[{"geometry": {"type": "Point", "coordinates": [21.54, 53.80]}, "type": "Feature", "properties": {"alias": "FUSI Matteo", "alarm_state": "0", "license": "092", "vehicle_state": "", "pos_date": "1455455257500", "tracking_state": "STOP", "speed": 0.1000, "heading": 116.6000}}]
+[{"geometry": {"type": "Point", "coordinates": [25.75, 62.24]}, "type": "Feature", "properties": {"alias": "FUSI Matteo", "alarm_state": "0", "license": "092", "vehicle_state": "", "pos_date": "1455455257500", "tracking_state": "STOP", "speed": 0.1000, "heading": 116.6000}}]
